@@ -1,13 +1,22 @@
-name = "MultiAffine"
+name = "MultiAffinity"
 uuid = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"
-authors = ["Olivier Verdier <olivier.verdier@gmail.com> and contributors"]
+authors = ["Olivier Verdier <olivier.verdier@gmail.com>"]
 version = "1.0.0-DEV"
+
+[deps]
+GroupTools = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+ManifoldDiff = "af67fdf4-a580-4b9f-bbec-742ef357defd"
+Manifolds = "1cead3c2-87b3-11e9-0ccd-23c62b72b94e"
+ManifoldsBase = "3362f125-f0bb-47a3-aa74-596ffd7ef2fb"
 
 [compat]
 julia = "1.6.7"
 
 [extras]
+GroupTools = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [targets]
-test = ["Test"]
+test = ["Test", "GroupTools", "Random"]
