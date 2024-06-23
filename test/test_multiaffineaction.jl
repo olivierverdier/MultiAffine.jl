@@ -60,3 +60,7 @@ end
     end
 end
 
+@testset "MultiAffineAction(group, selector)" begin
+    G = MultiDisplacement(3, 2)
+    @test_throws "no method matching MultiAffineAction" MultiAffineAction(G, RightAction())
+end

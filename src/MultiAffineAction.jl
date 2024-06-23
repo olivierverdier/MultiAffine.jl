@@ -19,7 +19,7 @@ Base.show(io::IO, A::MultiAffineAction{TAD}) where {TAD} = print(io, "MultiAffin
 
 function MultiAffineAction(
     group::MultiAffine{<:Any, <:Any, size},
-    selector,
+    selector::AbstractArray,
     conv::ActionDirection=LeftAction()
     ) where {size}
     @assert Base.size(selector, 1) == size
