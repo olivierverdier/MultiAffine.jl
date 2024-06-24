@@ -11,22 +11,32 @@ import Random
 
 rng = Random.default_rng()
 
+
+
 # TODO: this is also implemented in Motion.jl
 get_adjoint_matrix(G, vel, B::AbstractBasis) = GroupTools.matrix_from_lin_endomorphism(G, ξ -> lie_bracket(G, vel, ξ), B)
 
 
-# TODO: not used:
-function my_test_group(rng, G, n=3)
+@testset "general $G" for G in [
+    MultiDisplacement(3, 2),
+    MultiDisplacement(2),
+]
+    # the following seed is necessary,
+    # for some random cases either of both of these can happen
+    # 1. exp_lie is not the inverse of log_lie (due to a bug in julia's matrix log)
+    # 2. adjoint action is not exactly an algebra morphism (because of rounding errors)
+    Random.seed!(rng, 3)
+    n = 3
     pts = [rand(rng, G) for i in 1:n]
     vels = [rand(rng, GroupTools.algebra(G)) for i in 1:n]
-    # Manifolds.test_group(G, pts, [], vels,
     Manifolds.test_group(G, pts, vels, vels,
-                         test_exp_lie_log=false,
-                         test_lie_bracket=true,
-                         test_adjoint_action=true,
-                         test_diff=false,
-                         )
+        test_exp_lie_log=true,
+        test_lie_bracket=true,
+        test_adjoint_action=true,
+        test_diff=true,
+    )
 end
+
 
 
 # TODO: move to GroupTools
