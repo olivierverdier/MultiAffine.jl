@@ -162,22 +162,13 @@ function Manifolds.exp_lie!(G::MultiAffine, q, X)
     return q
 end
 
-# Alternative option: use the standard definition of adjoint_action
-# should do it with matrices as well
-# then could use this function for testing
-function Manifolds.adjoint_action(G::MultiAffine, p, X)
-    tmp = allocate_result(G, adjoint_action, X)
-    return adjoint_action!(G, tmp, p, X)
-end
 
-Manifolds.adjoint_action!(::MultiAffine, Y, ::Identity, X) = copyto!(Y, X)
-
-Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X) = begin
+Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X, ::LeftAction) = begin
     np, hp = submanifold_components(G, p)
     n, h = submanifold_components(G, tmp)
     nX, hX = submanifold_components(G, X)
     H = factor_group(G)
-    adjoint_action!(H, h, hp, hX)
+    adjoint_action!(H, h, hp, hX, LeftAction())
     A = G.op.action
     apply!(A, n, hp, nX)
     LinearAlgebra.axpy!(-1, apply_diff_group(A, Identity(H), h, np), n)
@@ -187,41 +178,6 @@ end
 
 inverse_adjoint_action!(G::MultiAffine, Y, p, X) = adjoint_action!(G, Y, inv(G,p), X)
 
-# Manifolds.translate_diff!(G::MultiAffine, Y, p, ::Any, X, dir::Tuple{RightAction, RightSide}) = inverse_adjoint_action!(G, Y, p, X)
-Manifolds.translate_diff!(G::MultiAffine,
-    Y, ::Any, ::Any, X,
-    ::Manifolds.LeftForwardAction,
-) = copyto!(G, Y, X)
-Manifolds.translate_diff!(G::MultiAffine,
-    Y, ::Any, ::Any, X,
-    ::Manifolds.RightForwardAction,
-) = copyto!(G, Y, X)
-Manifolds.translate_diff!(
-    G::MultiAffine,
-    Y, p, ::Any, X,
-    ::Manifolds.LeftBackwardAction,
-) = adjoint_action!(G, Y, p, X)
-Manifolds.translate_diff!(
-    G::MultiAffine,
-    Y, p, ::Any, X,
-    ::Manifolds.RightBackwardAction,
-) = inverse_adjoint_action!(G, Y, p, X)
-
-# simply because it is defined for semi-direct products as well
-Manifolds.translate_diff!(G::MultiAffine,
-    Y, ::Identity, ::Any, X,
-    # ::Manifolds.LeftForwardAction,
-    ::Manifolds.LeftForwardAction,
-) = copyto!(G, Y, X)
-Manifolds.translate_diff!(G::MultiAffine,
-    Y, ::Any, ::Identity, X,
-    # ::Manifolds.LeftForwardAction,
-    ::Manifolds.LeftForwardAction,
-) = copyto!(G, Y, X)
-
-
-Manifolds.inv_diff(::MultiAffine, ::Identity, ξ) = -ξ
-Manifolds.inv_diff!(G::MultiAffine, Y, p, X) = -adjoint_action!(G, Y, p, X)
 
 
 function Manifolds.lie_bracket(G::MultiAffine, v1, v2, )
