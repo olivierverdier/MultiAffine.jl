@@ -4,7 +4,9 @@ module MultiAffinity
 export MultiAffine,
     MultiDisplacement,
     from_normal_grp, from_normal_alg,
-    to_factor_grp, to_factor_alg
+    to_factor_grp, to_factor_alg,
+    to_normal_grp, to_normal_alg,
+    normal_group, factor_group
 
 import Manifolds
 import ManifoldsBase
@@ -32,7 +34,7 @@ import Manifolds:
 
 import LinearAlgebra
 
-export MultiAffineAction
+export MultiAffineAction, get_selector
 
 include("MultiAffineGroup.jl")
 include("MultiDisplacement.jl")

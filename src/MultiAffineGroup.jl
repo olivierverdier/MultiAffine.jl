@@ -219,11 +219,13 @@ from_normal_alg(G::MultiAffine, ts...) = begin
     return _fill_in!(G, x, ts...)
 end
 
-to_factor(G::MultiAffine, pt) = submanifold_component(G,pt,2)
+to_factor(G::MultiAffine, pt) = submanifold_component(G, pt, 2)
+to_factor_grp(G::MultiAffine, χ) = to_factor(G, χ)
+to_factor_alg(G::MultiAffine, ξ) = to_factor(G, ξ)
 
-to_factor_grp(G::MultiAffine, pt) = to_factor(G, pt)
-
-to_factor_alg(G::MultiAffine, pt) = to_factor(G, pt)
+to_normal(G::MultiAffine, pt) = submanifold_component(G, pt, 1)
+to_normal_grp(G::MultiAffine, χ) = to_normal(G, χ)
+to_normal_alg(G::MultiAffine, ξ) = to_normal(G, ξ)
 
 normal_indices(::MultiAffine{<:Any, dim}, idx; pos=0) where {dim} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim))
 factor_indices(::MultiAffine{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))
