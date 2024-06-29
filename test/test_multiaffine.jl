@@ -75,6 +75,14 @@ end
 @testset "eltype rand_lie" begin
     G = MultiAffine(Unitary(4), 3)
     @test eltype(rand_lie(rng, G)) <: Complex #broken=true
+@testset "exp (ad_ξ) = Ad_exp(ξ)" for G in [
+    MultiDisplacement(3,2),
+    MultiDisplacement(2),
+    MultiAffine(Unitary(3), 3), # broken: exp(ad_{ξ}) cannot be computed
+]
+    vel = rand_lie(rng, G)
+    tvel = rand_lie(rng, G)
+    @test check_exp_ad(G, vel, tvel) broken=G isa MultiAffine{<:Unitary}
 end
 
 _adjoint_action(G::MultiAffine, p, X) = begin
