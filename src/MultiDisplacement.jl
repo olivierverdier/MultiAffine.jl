@@ -1,5 +1,5 @@
 
-const MultiDisplacement{dim,size} = MultiAffine{
+const MultiDisplacement{dim,size} = MultiAffineGroup{
     SpecialOrthogonal{ManifoldsBase.TypeParameter{Tuple{dim}}},
     dim,
     size,
@@ -9,10 +9,10 @@ const MultiDisplacement{dim,size} = MultiAffine{
 """
     MultiDisplacement(n, size=1)
 
-A special case of the [`MultiAffine`](@ref) group, where the
+A special case of the [`MultiAffineGroup`](@ref) group, where the
 underlying group is the special orthogonal group ``SO(n)``.
 """
-MultiDisplacement(dim::Integer, size::Integer=1) = MultiAffine(SpecialOrthogonal(dim), size)
+MultiDisplacement(dim::Integer, size::Integer=1) = MultiAffineGroup(SpecialOrthogonal(dim), size)
 
 Base.show(io::IO, ::MultiDisplacement{dim,size}) where {dim,size} = print(io, "MultiDisplacement($(dim), $(size))")
 

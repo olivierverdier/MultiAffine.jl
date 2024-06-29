@@ -1,12 +1,12 @@
 """
     MultiAffineAction(
-      group::MultiAffine,
+      group::MultiAffineGroup,
       selector::AbstractArray,
       conv::ActionDirection=LeftAction()
       )
 
 Given a fixed vector ``S`` of size ``k`` (the `selector`) (or a matrix of size ``k×m``),
-this defines an action of the element ``[X;R]`` of the [`MultiAffine`](@ref) group (so ``X`` is a ``n×k`` matrix and ``R`` is an element of a matrix group)
+this defines an action of the element ``[X;R]`` of the [`MultiAffineGroup`](@ref) group (so ``X`` is a ``n×k`` matrix and ``R`` is an element of a matrix group)
  on the vector ``p`` of size ``n`` (or the matrix ``p`` of size ``n×m``).
 The action is defined by ``[X;R]⋅p := XS+Rp``.
 """
@@ -18,7 +18,7 @@ end
 Base.show(io::IO, A::MultiAffineAction{TAD}) where {TAD} = print(io, "MultiAffineAction($(A.group), $(A.selector), $TAD())")
 
 function MultiAffineAction(
-    group::MultiAffine{<:Any, <:Any, size},
+    group::MultiAffineGroup{<:Any, <:Any, size},
     selector::AbstractArray,
     conv::ActionDirection=LeftAction()
     ) where {size}
@@ -30,7 +30,7 @@ end
 In the case k=1, this is the standard affine action.
 """
 function MultiAffineAction(
-    group::MultiAffine{<:Any, <:Any, 1},
+    group::MultiAffineGroup{<:Any, <:Any, 1},
     conv::ActionDirection=LeftAction()
     )
     return MultiAffineAction(group, [1], conv)
@@ -42,12 +42,12 @@ end
 
 
 Manifolds.base_group(A::MultiAffineAction) = A.group
-Manifolds.group_manifold(::MultiAffineAction{<:Any,<:MultiAffine{<:Any, dim, <:Any, 𝔽}, <:AbstractVector}) where {dim,𝔽} = Euclidean(dim; field=𝔽)
-Manifolds.group_manifold(A::MultiAffineAction{<:Any,<:MultiAffine{<:Any, dim, <:Any, 𝔽}, <:AbstractMatrix}) where {dim,𝔽} = Euclidean(dim, size(A.selector, 2); field=𝔽)
+Manifolds.group_manifold(::MultiAffineAction{<:Any,<:MultiAffineGroup{<:Any, dim, <:Any, 𝔽}, <:AbstractVector}) where {dim,𝔽} = Euclidean(dim; field=𝔽)
+Manifolds.group_manifold(A::MultiAffineAction{<:Any,<:MultiAffineGroup{<:Any, dim, <:Any, 𝔽}, <:AbstractMatrix}) where {dim,𝔽} = Euclidean(dim, size(A.selector, 2); field=𝔽)
 
 get_selector(A::MultiAffineAction) = A.selector
 
-Manifolds.apply(::MultiAffineAction{<:Any, MultiAffine{TH,dim,size,𝔽}},
+Manifolds.apply(::MultiAffineAction{<:Any, MultiAffineGroup{TH,dim,size,𝔽}},
                 ::Identity{MultiAffineOp{TH,dim,size,𝔽}}, p) where {TH,dim,size,𝔽} = p
 
 function Manifolds.apply!(
@@ -71,7 +71,7 @@ Manifolds.apply!(A::MultiAffineAction{RightAction}, q, χ, p) = apply!(switch_di
 
 
 function Manifolds.apply_diff_group(
-    A::MultiAffineAction{LeftAction, MultiAffine{TH,dim,size,𝔽}},
+    A::MultiAffineAction{LeftAction, MultiAffineGroup{TH,dim,size,𝔽}},
     ::Identity{MultiAffineOp{TH,dim,size,𝔽}},
     ξ,
     p
@@ -85,7 +85,7 @@ end
 
 
 function Manifolds.apply_diff_group(
-    A::MultiAffineAction{RightAction,MultiAffine{TH,dim,size,𝔽}},
+    A::MultiAffineAction{RightAction,MultiAffineGroup{TH,dim,size,𝔽}},
     I::Identity{MultiAffineOp{TH,dim,size,𝔽}},
     ξ,
     p

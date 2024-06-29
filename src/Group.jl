@@ -8,7 +8,7 @@ const MultiColumnwiseMultiplicationAction{G,dim,size,𝔽} = Manifolds.Columnwis
     G,
 }
 
-const MultiAffine{G,dim,size,𝔽} = SemidirectProductGroup{
+const MultiAffineGroup{G,dim,size,𝔽} = SemidirectProductGroup{
     𝔽,
     TranslationGroup{ManifoldsBase.TypeParameter{Tuple{dim,size}},𝔽},
     G,
@@ -18,7 +18,7 @@ const MultiAffine{G,dim,size,𝔽} = SemidirectProductGroup{
 const MultiAffineOp{G,dim,size,𝔽} = Manifolds.SemidirectProductOperation{MultiColumnwiseMultiplicationAction{G,dim,size,𝔽}}
 
 @doc raw"""
-    MultiAffine(G, k=1)
+    MultiAffineGroup(G, k=1)
 
 An affine group modelling matrices of the form
 ```math
@@ -31,7 +31,7 @@ and ``X`` is a ``n × k`` matrix.
 If we denote such an element by ``[X,g]``,
 the multiplication law is ``[X,g] [X',g'] = [X+gX';gg']``.
 """
-function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
+function MultiAffineGroup(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)
     action = Manifolds.ColumnwiseMultiplicationAction(space, G)
     group = GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))
@@ -39,19 +39,19 @@ function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBas
 end
 
 
-Base.show(io::IO, ::MultiAffine{G, <:Any,size}) where {G, size} = print(io, "MultiAffine($(G), $(size))")
+Base.show(io::IO, ::MultiAffineGroup{G, <:Any,size}) where {G, size} = print(io, "MultiAffineGroup($(G), $(size))")
 
-_get_representation_dim(::MultiAffine{<:Any,dim,size}
+_get_representation_dim(::MultiAffineGroup{<:Any,dim,size}
                         ) where {dim,size} = dim+size
 
 
-function Manifolds.allocate_result(G::MultiAffine, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...)
+function Manifolds.allocate_result(G::MultiAffineGroup, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...)
     d = _get_representation_dim(G)
     return allocate(Xis[1], Manifolds.Size(d,d))
 end
 
 Base.@propagate_inbounds function Manifolds._padvector!(
-    ::MultiAffine{<:Any, <:Any, size},
+    ::MultiAffineGroup{<:Any, <:Any, size},
     X::AbstractMatrix,
 ) where {size}
     for i in Base.Iterators.take(axes(X, 1), size)
@@ -63,7 +63,7 @@ Base.@propagate_inbounds function Manifolds._padvector!(
 end
 
 Base.@propagate_inbounds function Manifolds._padpoint!(
-    G::MultiAffine{<:Any,<:Any,size},
+    G::MultiAffineGroup{<:Any,<:Any,size},
     q::AbstractMatrix,
 ) where {size}
     Manifolds._padvector!(G, q)
@@ -75,7 +75,7 @@ end
 
 
 function Manifolds.affine_matrix(
-    G::MultiAffine,
+    G::MultiAffineGroup,
     p
     )
     pis = submanifold_components(G, p)
@@ -86,7 +86,7 @@ function Manifolds.affine_matrix(
 end
 
 function Manifolds.affine_matrix(
-    G::MultiAffine{TH, dim, size, 𝔽},
+    G::MultiAffineGroup{TH, dim, size, 𝔽},
     ::Identity{MultiAffineOp{TH, dim, size, 𝔽}}
     ) where {TH, dim, size, 𝔽}
     n = _get_representation_dim(G)
@@ -94,7 +94,7 @@ function Manifolds.affine_matrix(
 end
 
 function Manifolds.zero_vector(
-    G::MultiAffine{TH, dim, size, 𝔽},
+    G::MultiAffineGroup{TH, dim, size, 𝔽},
     ::Identity{MultiAffineOp{TH, dim, size, 𝔽}}
     ) where {TH, dim, size, 𝔽}
     res = allocate_result(G, typeof(zero_vector))
@@ -103,7 +103,7 @@ function Manifolds.zero_vector(
 end
 
 
-function Manifolds.screw_matrix(G::MultiAffine, X)
+function Manifolds.screw_matrix(G::MultiAffineGroup, X)
     Xis = submanifold_components(G, X)
     Xmat = allocate_result(G, screw_matrix, Xis...)
     map(copyto!, submanifold_components(G, Xmat), Xis)
@@ -113,7 +113,7 @@ end
 
 
 Base.@propagate_inbounds function Manifolds.submanifold_component(
-    ::MultiAffine{<:Any,dim,size},
+    ::MultiAffineGroup{<:Any,dim,size},
     p::AbstractMatrix,
     ::Val{1},
     ) where {dim,size}
@@ -124,7 +124,7 @@ Base.@propagate_inbounds function Manifolds.submanifold_component(
 end
 
 Base.@propagate_inbounds function Manifolds.submanifold_component(
-    ::MultiAffine{<:Any,dim},
+    ::MultiAffineGroup{<:Any,dim},
     p::AbstractMatrix,
     ::Val{2},
     ) where {dim}
@@ -135,7 +135,7 @@ Base.@propagate_inbounds function Manifolds.submanifold_component(
 end
 
 function Manifolds.submanifold_components(
-    G::MultiAffine,
+    G::MultiAffineGroup,
     p::AbstractMatrix,
     )
     d = _get_representation_dim(G)
@@ -146,7 +146,7 @@ function Manifolds.submanifold_components(
 end
 
 
-function Manifolds._log_lie!(G::MultiAffine, X, q)
+function Manifolds._log_lie!(G::MultiAffineGroup, X, q)
     qmat = affine_matrix(G, q)
     Xmat = real(Manifolds.log_safe(qmat))
     map(copyto!, submanifold_components(G, X), submanifold_components(G, Xmat))
@@ -154,7 +154,7 @@ function Manifolds._log_lie!(G::MultiAffine, X, q)
     return X
 end
 
-function Manifolds.exp_lie!(G::MultiAffine, q, X)
+function Manifolds.exp_lie!(G::MultiAffineGroup, q, X)
     Xmat = screw_matrix(G, X)
     qmat = exp(Xmat)
     map(copyto!, submanifold_components(G, q), submanifold_components(G, qmat))
@@ -163,7 +163,7 @@ function Manifolds.exp_lie!(G::MultiAffine, q, X)
 end
 
 
-Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X, ::LeftAction) = begin
+Manifolds.adjoint_action!(G::MultiAffineGroup, tmp, p, X, ::LeftAction) = begin
     np, hp = submanifold_components(G, p)
     n, h = submanifold_components(G, tmp)
     nX, hX = submanifold_components(G, X)
@@ -176,16 +176,16 @@ Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X, ::LeftAction) = begin
 end
 
 
-inverse_adjoint_action!(G::MultiAffine, Y, p, X) = adjoint_action!(G, Y, inv(G,p), X)
+inverse_adjoint_action!(G::MultiAffineGroup, Y, p, X) = adjoint_action!(G, Y, inv(G,p), X)
 
 
 
-function Manifolds.lie_bracket(G::MultiAffine, v1, v2, )
+function Manifolds.lie_bracket(G::MultiAffineGroup, v1, v2, )
     res = allocate_result(G, lie_bracket)
     return lie_bracket!(G, res, v1, v2)
 end
 
-function Manifolds.lie_bracket!(G::MultiAffine, res, v1, v2, )
+function Manifolds.lie_bracket!(G::MultiAffineGroup, res, v1, v2, )
     A = G.op.action
     n1, h1 = submanifold_components(v1)
     n2, h2 = submanifold_components(v2)
@@ -198,34 +198,34 @@ end
 # The two morphisms corresponding to the sequence
 # 0 -> V -> G -> H -> 0
 
-function _fill_in!(G::MultiAffine, x, ts)
+function _fill_in!(G::MultiAffineGroup, x, ts)
     X = submanifold_component(G, x, 1)
     copyto!(X, ts)
     return x
 end
 
-_fill_in!(G::MultiAffine, x, ts...) = _fill_in!(G, x, hcat(ts...))
+_fill_in!(G::MultiAffineGroup, x, ts...) = _fill_in!(G, x, hcat(ts...))
 
-factor_group(G::MultiAffine) = submanifold(G, 2)
-normal_group(G::MultiAffine) = submanifold(G, 1)
+factor_group(G::MultiAffineGroup) = submanifold(G, 2)
+normal_group(G::MultiAffineGroup) = submanifold(G, 1)
 
-from_normal_grp(G::MultiAffine, ts...) = begin
+from_normal_grp(G::MultiAffineGroup, ts...) = begin
     x = identity_element(G)
     return _fill_in!(G, x, ts...)
 end
 
-from_normal_alg(G::MultiAffine, ts...) = begin
+from_normal_alg(G::MultiAffineGroup, ts...) = begin
     x = zero_vector(G, identity_element(G))
     return _fill_in!(G, x, ts...)
 end
 
-to_factor(G::MultiAffine, pt) = submanifold_component(G, pt, 2)
-to_factor_grp(G::MultiAffine, χ) = to_factor(G, χ)
-to_factor_alg(G::MultiAffine, ξ) = to_factor(G, ξ)
+to_factor(G::MultiAffineGroup, pt) = submanifold_component(G, pt, 2)
+to_factor_grp(G::MultiAffineGroup, χ) = to_factor(G, χ)
+to_factor_alg(G::MultiAffineGroup, ξ) = to_factor(G, ξ)
 
-to_normal(G::MultiAffine, pt) = submanifold_component(G, pt, 1)
-to_normal_grp(G::MultiAffine, χ) = to_normal(G, χ)
-to_normal_alg(G::MultiAffine, ξ) = to_normal(G, ξ)
+to_normal(G::MultiAffineGroup, pt) = submanifold_component(G, pt, 1)
+to_normal_grp(G::MultiAffineGroup, χ) = to_normal(G, χ)
+to_normal_alg(G::MultiAffineGroup, ξ) = to_normal(G, ξ)
 
-normal_indices(::MultiAffine{<:Any, dim}, idx; pos=0) where {dim} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim))
-factor_indices(::MultiAffine{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))
+normal_indices(::MultiAffineGroup{<:Any, dim}, idx; pos=0) where {dim} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim))
+factor_indices(::MultiAffineGroup{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))

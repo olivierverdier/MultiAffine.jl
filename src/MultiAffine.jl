@@ -1,10 +1,12 @@
-module MultiAffineTools
+module MultiAffine
 
 # MultiAffine
-export MultiAffine,
+export MultiAffineGroup,
     MultiDisplacement,
     from_normal_grp, from_normal_alg,
-    to_factor_grp, to_factor_alg
+    to_factor_grp, to_factor_alg,
+    to_normal_grp, to_normal_alg,
+    normal_group, factor_group
 
 import Manifolds
 import ManifoldsBase
@@ -32,13 +34,13 @@ import Manifolds:
 
 import LinearAlgebra
 
-export MultiAffineAction
+export MultiAffineAction, get_selector
 
-include("MultiAffineGroup.jl")
+include("Group.jl")
 include("MultiDisplacement.jl")
 include("rotation_action.jl")
 
-include("MultiAffineAction.jl")
+include("Action.jl")
 
 
 end

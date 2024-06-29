@@ -1,9 +1,9 @@
-using MultiAffinity
+using MultiAffine
 using Test
 
 test_files = [
-    "test_multiaffine.jl",
-    "test_multiaffineaction.jl",
+    "test_group.jl",
+    "test_action.jl",
 ]
 
 @time @testset " " for path in test_files

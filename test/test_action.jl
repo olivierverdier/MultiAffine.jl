@@ -1,12 +1,12 @@
 using Test
-using MultiAffinity
+using MultiAffine
 
 using Manifolds
 import Random: default_rng
 
 rng = default_rng()
 
-random_multiaffine_action(rng, G::MultiAffine{<:Any, <:Any, size}, conv) where {size} = begin
+random_multiaffine_action(rng, G::MultiAffineGroup{<:Any, <:Any, size}, conv) where {size} = begin
     sel = randn(rng, size)
     return MultiAffineAction(G, sel, conv)
 end
@@ -86,14 +86,14 @@ check_repr(A::MultiAffineAction{conv}) where {conv} = begin
 end
 
 """
-    check_default_selector(G::MultiAffine)
+    check_default_selector(G::MultiAffineGroup)
 
 If `size` is one, the group G is some
 displacement group, and the multiaffine action
 can be created with `MultiAffineAction(G)`
 with a default selector equal to `[1]`.
 """
-check_default_selector(G::MultiAffine{<:Any, <:Any, 1}) = begin
+check_default_selector(G::MultiAffineGroup{<:Any, <:Any, 1}) = begin
     A = MultiAffineAction(G)
     return get_selector(A) == [1]
 end
@@ -136,8 +136,8 @@ check_trivial_infinitesimal_action(A::AbstractGroupAction, p) = begin
     return isapprox(TM, computed, expected)
 end
 
-get_size(::MultiAffine{<:Any,<:Any,size}) where {size} = size
-get_dim(::MultiAffine{<:Any,dim}) where {dim} = dim
+get_size(::MultiAffineGroup{<:Any,<:Any,size}) where {size} = size
+get_dim(::MultiAffineGroup{<:Any,dim}) where {dim} = dim
 
 
 @testset "Test Multiaffine Action" for G in [MultiDisplacement(3,2)]
@@ -186,7 +186,7 @@ by `switch_direction` one has
 α(χ,p) = α'(χ^{-1}, p)
 ```
 """
-check_switch_action_direction(A::AbstractGroupAction, χ, p) = isapprox(group_manifold(A), apply(switch_direction(A), χ, p), apply(A, inv(G, χ), p))
+check_switch_action_direction(A::AbstractGroupAction, χ, p) = isapprox(group_manifold(A), apply(switch_direction(A), χ, p), apply(A, inv(base_group(A), χ), p))
 
 @testset "MultiAffineAction apply $G×$prod" for G in [
     MultiDisplacement(3, 2),

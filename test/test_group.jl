@@ -1,5 +1,5 @@
 using Test
-using MultiAffinity
+using MultiAffine
 
 import GroupTools
 
@@ -18,7 +18,7 @@ rng = Random.default_rng()
 @testset "general $G" for G in [
     MultiDisplacement(3, 2),
     MultiDisplacement(2),
-    MultiAffine(Unitary(2), 2),
+    MultiAffineGroup(Unitary(2), 2),
 ]
     # the following seed is necessary,
     # for some random cases either of both of these can happen
@@ -29,7 +29,7 @@ rng = Random.default_rng()
     pts = [rand(rng, G) for i in 1:n]
     vels = [rand(rng, GroupTools.algebra(G)) for i in 1:n]
     Manifolds.test_group(G, pts, vels, vels,
-        test_exp_lie_log=!isa(G, MultiAffine{<:Unitary}),
+        test_exp_lie_log=!isa(G, MultiAffineGroup{<:Unitary}),
         test_lie_bracket=true,
         test_adjoint_action=true,
         test_diff=true,
@@ -44,7 +44,7 @@ function rand_lie(rng::AbstractRNG, G)
 end
 
 @testset "eltype rand_lie" begin
-    G = MultiAffine(Unitary(4), 3)
+    G = MultiAffineGroup(Unitary(4), 3)
     @test eltype(rand_lie(rng, G)) <: Complex
 end
 
@@ -74,19 +74,19 @@ end
 @testset "exp (ad_ξ) = Ad_exp(ξ)" for G in [
     MultiDisplacement(3,2),
     MultiDisplacement(2),
-    MultiAffine(Unitary(3), 3), # broken: exp(ad_{ξ}) cannot be computed
+    MultiAffineGroup(Unitary(3), 3), # broken: exp(ad_{ξ}) cannot be computed
 ]
     vel = rand_lie(rng, G)
     tvel = rand_lie(rng, G)
-    @test check_exp_ad(G, vel, tvel) broken=G isa MultiAffine{<:Unitary}
+    @test check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
 end
 
-_adjoint_action(G::MultiAffine, p, X) = begin
+_adjoint_action(G::MultiAffineGroup, p, X) = begin
     tmp = allocate_result(G, adjoint_action, X)
     return _adjoint_action!(G, tmp, p, X)
 end
 
-_adjoint_action!(G::MultiAffine, tmp, p, X) = begin
+_adjoint_action!(G::MultiAffineGroup, tmp, p, X) = begin
     mat = affine_matrix(G, p)
     matinv = affine_matrix(G, inv(G, p))
     res = mat * screw_matrix(G, X) * matinv
@@ -97,7 +97,7 @@ end
 @testset "Compare Adjoint Implementations" for G in [
     MultiDisplacement(3, 2),
     MultiDisplacement(2),
-    MultiAffine(Unitary(3), 2),
+    MultiAffineGroup(Unitary(3), 2),
 ]
     χ = rand(rng, G)
     ξ = rand_lie(rng, G)
@@ -188,12 +188,12 @@ end
             @test !isa(GM, MultiDisplacement{dim + 1,size})
         end
     end
-    @testset "MultiAffine(G, $size) creates proper type" for dim in [4]
+    @testset "MultiAffineGroup(G, $size) creates proper type" for dim in [4]
         for size in [3]
-            GA = MultiAffine(Orthogonal(dim), size)
-            @test isa(GA, MultiAffine{typeof(Orthogonal(dim)),dim,size,ℝ})
-            @test !isa(GA, MultiAffine{typeof(Orthogonal(dim + 1)),dim + 1,size,ℝ})
-            @test isa(MultiAffine(Unitary(dim), size), MultiAffine)
+            GA = MultiAffineGroup(Orthogonal(dim), size)
+            @test isa(GA, MultiAffineGroup{typeof(Orthogonal(dim)),dim,size,ℝ})
+            @test !isa(GA, MultiAffineGroup{typeof(Orthogonal(dim + 1)),dim + 1,size,ℝ})
+            @test isa(MultiAffineGroup(Unitary(dim), size), MultiAffineGroup)
         end
     end
 end
@@ -227,71 +227,6 @@ check_grp_rep_Identity(G, grp_rep) = begin
     return isapprox(expected, computed)
 end
 
-check_zero_Identity(G) = isapprox(GroupTools.algebra(G),
-                                  zero_vector(G, Identity(G)),
-                                  zero_vector(G, identity_element(G)))
-
-check_from_normal_grp(G::MultiAffine, ts) = begin
-    χ1 = from_normal_grp(G, eachcol(ts)...)
-    χ2 = from_normal_grp(G, ts)
-    return isapprox(G, χ1, χ2)
-end
-
-check_from_normal_alg(G::MultiAffine, ts) = begin
-    ξ1 = from_normal_alg(G, eachcol(ts)...)
-    ξ2 = from_normal_alg(G, ts)
-    return isapprox(GroupTools.algebra(G), ξ1, ξ2)
-end
-
-"""
-    rand_trans(rng, G::MultiAffine)
-
-Random translation part of the group `G`.
-"""
-rand_trans(rng, G::MultiAffine{TH, dim, size}) where {TH, dim, size} = randn(rng, dim, size)
-
-@testset "from/to $G" for G in [MultiDisplacement(3,2)]
-    @testset "grp" begin
-        @test check_from_normal_grp(G, rand_trans(rng, G))
-    end
-    @testset "alg" begin
-        @test check_from_normal_alg(G, rand_trans(rng, G))
-    end
-end
-
-
-@testset "Test $G" for G in [
-    MultiDisplacement(3,2),
-    MultiDisplacement(2),
-    MultiAffine(Unitary(3), 2),
-    ]
-    @test check_grp_rep_Identity(G, affine_matrix)
-    vel = rand_lie(rng, G)
-    pt = rand(rng, G)
-    @test check_exp_lie_point(G, vel)
-    @test check_adjoint_action_in_alg(G, pt, vel)
-    @testset "zero_element" begin
-        @test check_zero_Identity(G)
-    end
-    @testset "Inverse & Matrix" begin
-        χ = rand(rng, G)
-        @test check_inv_rep(G, affine_matrix, χ)
-    end
-    @testset "Adjoint action & matrix" begin
-        χ = rand(rng, G)
-        ξ = rand_lie(rng, G)
-        @test check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
-    end
-    @testset "Lie Bracket & matrix" begin
-        v1, v2 = [rand_lie(rng, G) for i in 1:2]
-        @test check_alg_rep(G, screw_matrix, v1, v2)
-    end
-    @testset "Composition & matrix" begin
-        p1, p2 = [rand(rng, G) for i in 1:2]
-        @test check_grp_rep_compose(G, affine_matrix, p1, p2)
-    end
-end
-
 """
     check_grp_rep_compose(G, ρ, χ1, χ2)
 
@@ -323,6 +258,72 @@ check_alg_rep(G, alg_rep, ξ1, ξ2) = begin
     computed = alg_rep(G, lie_bracket(G, ξ1, ξ2))
     return isapprox(expected, computed)
 end
+
+check_zero_Identity(G) = isapprox(GroupTools.algebra(G),
+                                  zero_vector(G, Identity(G)),
+                                  zero_vector(G, identity_element(G)))
+
+check_from_normal_grp(G::MultiAffineGroup, ts) = begin
+    χ1 = from_normal_grp(G, eachcol(ts)...)
+    χ2 = from_normal_grp(G, ts)
+    return isapprox(G, χ1, χ2)
+end
+
+check_from_normal_alg(G::MultiAffineGroup, ts) = begin
+    ξ1 = from_normal_alg(G, eachcol(ts)...)
+    ξ2 = from_normal_alg(G, ts)
+    return isapprox(GroupTools.algebra(G), ξ1, ξ2)
+end
+
+"""
+    rand_trans(rng, G::MultiAffineGroup)
+
+Random translation part of the group `G`.
+"""
+rand_trans(rng, G::MultiAffineGroup{TH, dim, size}) where {TH, dim, size} = randn(rng, dim, size)
+
+@testset "from/to $G" for G in [MultiDisplacement(3,2)]
+    @testset "grp" begin
+        @test check_from_normal_grp(G, rand_trans(rng, G))
+    end
+    @testset "alg" begin
+        @test check_from_normal_alg(G, rand_trans(rng, G))
+    end
+end
+
+
+@testset "Test $G" for G in [
+    MultiDisplacement(3,2),
+    MultiDisplacement(2),
+    MultiAffineGroup(Unitary(3), 2),
+    ]
+    @test check_grp_rep_Identity(G, affine_matrix)
+    vel = rand_lie(rng, G)
+    pt = rand(rng, G)
+    @test check_exp_lie_point(G, vel)
+    @test check_adjoint_action_in_alg(G, pt, vel)
+    @testset "zero_element" begin
+        @test check_zero_Identity(G)
+    end
+    @testset "Inverse & Matrix" begin
+        χ = rand(rng, G)
+        @test check_inv_rep(G, affine_matrix, χ)
+    end
+    @testset "Adjoint action & matrix" begin
+        χ = rand(rng, G)
+        ξ = rand_lie(rng, G)
+        @test check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
+    end
+    @testset "Lie Bracket & matrix" begin
+        v1, v2 = [rand_lie(rng, G) for i in 1:2]
+        @test check_alg_rep(G, screw_matrix, v1, v2)
+    end
+    @testset "Composition & matrix" begin
+        p1, p2 = [rand(rng, G) for i in 1:2]
+        @test check_grp_rep_compose(G, affine_matrix, p1, p2)
+    end
+end
+
 
 
 
