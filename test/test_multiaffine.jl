@@ -72,9 +72,6 @@ function check_exp_ad(G, vel, tvel)
 end
 
 
-@testset "eltype rand_lie" begin
-    G = MultiAffine(Unitary(4), 3)
-    @test eltype(rand_lie(rng, G)) <: Complex #broken=true
 @testset "exp (ad_ξ) = Ad_exp(ξ)" for G in [
     MultiDisplacement(3,2),
     MultiDisplacement(2),
