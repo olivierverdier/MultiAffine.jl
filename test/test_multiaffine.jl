@@ -127,18 +127,38 @@ end
 
 _switch_sign(ξ, ::LeftSide) = ξ
 _switch_sign(ξ, ::RightSide) = -ξ
+"""
+    check_apply_diff_group(G, side::GroupActionSide)
 
-
-@testset "Test diff" begin
-    G = MultiDisplacement(3, 2)
-    # G = SpecialEuclidean(3)
-    # G = SpecialOrthogonal(3)
+The left group operation action on itself ``α(χ_1)χ_2``
+is either (left side)
+```math
+α(χ_1)χ_2 = χ_1 χ_2
+```
+or (right side)
+```math
+α(χ_1)χ_2 = χ_2 χ_1^{-1}
+```
+Now fix ``χ_2 = 1`` (1 is the identity of ``G``) and define ``f : G → G`` by ``f(χ) := α(χ) 1``. Since ``f(1) = 1``,
+its differential at identity is a map ``Alg(G) → Alg(G)``.
+This map is either
+- ``Id`` (left side)
+- ``-Id`` (right side)
+"""
+check_apply_diff_group(G, ξ, side::Manifolds.GroupActionSide) = begin
     id = identity_element(G)
-    g = TangentSpace(G, identity_element(G))
-    ξ = rand(rng, g)
+    ξ_ = apply_diff_group(GroupOperationAction(G, (LeftAction(), side)), id, ξ, id)
+    return isapprox(GroupTools.algebra(G), ξ, _switch_sign(ξ_, side))
+end
+
+@testset "Diff $G" for G in [
+    MultiDisplacement(3, 2),
+    SpecialEuclidean(3),
+    SpecialOrthogonal(3),
+    ]
     @testset "$side" for side in [LeftSide(), RightSide()]
-        ξ_ = apply_diff_group(GroupOperationAction(G, (LeftAction(), side)), id, ξ, id)
-        @test isapprox(g, ξ, _switch_sign(ξ_, side))
+        ξ = rand(rng, GroupTools.algebra(G))
+        @test check_apply_diff_group(G, ξ, side)
     end
 end
 
