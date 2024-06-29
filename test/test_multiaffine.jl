@@ -50,34 +50,27 @@ end
 end
 
 
+
+
 """
-Compute both
-Ad_{exp(ξ)}ξ'
- and
-exp(ad_ξ) ξ'
+``Ad`` and ``exp`` commute:
+```math
+Ad_{exp(ξ_1)}ξ_2 = exp(ad_{ξ_1}) ξ_2
+```
 """
-function _compute_both(G, vel, tvel)
+function check_exp_ad(G, vel, tvel)
     χ = exp_lie(G, vel)
-    right = adjoint_action(G, χ, tvel)
+    Ad_exp = adjoint_action(G, χ, tvel)
 
     lie_bracket(G, vel, tvel)
     B = DefaultOrthogonalBasis()
-    der = get_adjoint_matrix(G, vel, B)
+    der = GroupTools.matrix_from_lin_endomorphism(G, ξ -> lie_bracket(G, vel, ξ), B)
     mor = exp(der)
     tvel_coord = get_coordinates_lie(G, tvel, B)
-    left = get_vector_lie(G, mor * tvel_coord, B)
-    return left, right
+    exp_ad = get_vector_lie(G, mor * tvel_coord, B)
+    return isapprox(GroupTools.algebra(G), Ad_exp, exp_ad)
 end
 
-function test_exp_ad(rng, G)
-  @testset "exp (ad_ξ) = Ad_exp(ξ)" begin
-      vel = rand_lie(rng, G)
-      tvel = rand_lie(rng, G)
-      left, right = _compute_both(G, vel, tvel)
-      # @test isapprox(G, Identity(G), left, right)
-      @test isapprox(G, identity_element(G), left, right)
-  end
-end
 
 @testset "eltype rand_lie" begin
     G = MultiAffine(Unitary(4), 3)
