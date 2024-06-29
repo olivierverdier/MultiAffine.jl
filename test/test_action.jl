@@ -6,16 +6,19 @@ import Random: default_rng
 
 rng = default_rng()
 
+include("action_testing.jl")
+
+"""
+    random_multiaffine_action(rng, G::MultiAffineGroup, conv)
+
+Given a multiaffine group,
+create a multiaffine action defined by a random selector.
+"""
 random_multiaffine_action(rng, G::MultiAffineGroup{<:Any, <:Any, size}, conv) where {size} = begin
     sel = randn(rng, size)
     return MultiAffineAction(G, sel, conv)
 end
-include("action_testing.jl")
 
-"""
-
-"""
-end
 
 @testset "Test action morphism $G $conv" for G in [
     MultiDisplacement(4,2),
