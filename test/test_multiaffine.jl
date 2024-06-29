@@ -96,8 +96,11 @@ _adjoint_action!(G::MultiAffine, tmp, p, X) = begin
     return tmp
 end
 
-@testset "Adjoint" begin
-    G = MultiDisplacement(3,2)
+@testset "Compare Adjoint Implementations" for G in [
+    MultiDisplacement(3, 2),
+    MultiDisplacement(2),
+    MultiAffine(Unitary(3), 2),
+]
     χ = rand(rng, G)
     ξ = rand_lie(rng, G)
     expected = _adjoint_action(G, χ, ξ)
