@@ -20,6 +20,7 @@ get_adjoint_matrix(G, vel, B::AbstractBasis) = GroupTools.matrix_from_lin_endomo
 @testset "general $G" for G in [
     MultiDisplacement(3, 2),
     MultiDisplacement(2),
+    MultiAffine(Unitary(2), 2),
 ]
     # the following seed is necessary,
     # for some random cases either of both of these can happen
@@ -30,7 +31,7 @@ get_adjoint_matrix(G, vel, B::AbstractBasis) = GroupTools.matrix_from_lin_endomo
     pts = [rand(rng, G) for i in 1:n]
     vels = [rand(rng, GroupTools.algebra(G)) for i in 1:n]
     Manifolds.test_group(G, pts, vels, vels,
-        test_exp_lie_log=true,
+        test_exp_lie_log=!isa(G, MultiAffine{<:Unitary}),
         test_lie_bracket=true,
         test_adjoint_action=true,
         test_diff=true,
