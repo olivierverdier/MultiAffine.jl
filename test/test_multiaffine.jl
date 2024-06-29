@@ -163,14 +163,25 @@ end
 end
 
 @testset "Test types" begin
-    @testset "MultiDisplacement(x,y) creates proper type" begin
-        dim = 4
-        size = 2
-        G = MultiDisplacement(dim,size)
-        GM = MultiDisplacement(dim,size)
-        @test isa(GM, MultiDisplacement{dim,size})
-        @test !isa(GM, MultiDisplacement{dim,size+5})
-        @test !isa(GM, MultiDisplacement{dim+1,size})
+    @testset "MultiDisplacement($dim,$size) creates proper type" for dim in [4]
+        for size in [2]
+            dim = 4
+            size = 2
+            GM = MultiDisplacement(dim, size)
+            @test isa(GM, MultiDisplacement{dim,size})
+            @test !isa(GM, MultiDisplacement{dim,size + 5})
+            @test !isa(GM, MultiDisplacement{dim + 1,size})
+        end
+    end
+    @testset "MultiAffine(G, $size) creates proper type" for dim in [4]
+        for size in [3]
+            GA = MultiAffine(Orthogonal(dim), size)
+            @test isa(GA, MultiAffine{typeof(Orthogonal(dim)),dim,size,ℝ})
+            @test !isa(GA, MultiAffine{typeof(Orthogonal(dim + 1)),dim + 1,size,ℝ})
+            @test isa(MultiAffine(Unitary(dim), size), MultiAffine)
+        end
+    end
+end
     end
     @testset "MultiAffine(G, size) creates proper type" begin
         GA = MultiAffine(Orthogonal(4), 3)
