@@ -99,6 +99,23 @@ end
     @test isapprox(GroupTools.algebra(G), expected, computed)
 end
 
+"""
+    check_adjoint_action(G, grp_rep, alg_rep, χ, ξ)
+
+The group representation ``ρ`` and algebra representation ``ρ``
+ commute with the adjoint action:
+```math
+ρ(χ) ρ(ξ) ρ(χ)^{-1} = ρ(Ad_χ (ξ))
+```
+"""
+check_adjoint_action(G, grp_rep, alg_rep, χ, ξ) = begin
+    mat = grp_rep(G, χ)
+    matinv = inv(mat)
+    expected = mat * alg_rep(G, ξ) * matinv
+    computed = alg_rep(G, adjoint_action(G, χ, ξ))
+    return isapprox(computed, expected)
+end
+
 _switch_sign(ξ, ::LeftSide) = ξ
 _switch_sign(ξ, ::RightSide) = -ξ
 
@@ -188,6 +205,11 @@ test_exp_ad(Random.default_rng(), MultiDisplacement(3, 2))
     ]
     # begin
     test_multi_affine(Random.default_rng(), G)
+    @testset "Adjoint action & matrix" begin
+        χ = rand(rng, G)
+        ξ = rand_lie(rng, G)
+        @test check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
+    end
 end
 
 include("multiaffine/apply_diff_group.jl")
