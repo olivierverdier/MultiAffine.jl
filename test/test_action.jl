@@ -169,6 +169,15 @@ end
     @test check_default_selector(se)
 end
 
+"""
+    check_multiaffine_action(α::MultiAffineAction, χ, p)
+
+The multiafine action ``α`` with selector ``σ`` satisfies
+for any ``χ = [M; R]`` and point ``p``:
+```math
+α([M;R], p) = Mσ + Rp
+```
+"""
 check_multiaffine_action(A::MultiAffineAction, χ, p) = begin
     computed = apply(A, χ, p)
     M, R = submanifold_components(base_group(A), χ)
