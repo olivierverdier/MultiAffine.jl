@@ -41,43 +41,12 @@ end
 
 # TODO: move to GroupTools
 function rand_lie(rng::AbstractRNG, G)
-    return rand(rng, TangentSpace(G, identity_element(G)))
+    return rand(rng, GroupTools.algebra(G))
 end
 
-function randn_vec(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup{MB.TypeParameter{Tuple{n}}};
-                   σ::Real=1.,
-                   ) where {n}
-    NT = MB.allocate_result_type(G, typeof(randn_vec), ())
-    M = σ*randn(rng, NT, n, n)
-    ξ = M - M' # some kind of projection like the one in SkewHermitianMatrices?
-    @assert is_vector(G, identity_element(G), ξ)
-    return ξ
-end
-
-function randn_pt(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup;
-                  σ::Real=1.,
-                  )
-    ξ = randn_vec(rng, G; σ)
-    return exp_lie(G, ξ)
-end
-
-function rand!(rng::AbstractRNG,
-               M::Manifolds.GeneralUnitaryMatrices{MB.TypeParameter{Tuple{n}}},
-               tmp;
-               vector_at=nothing,
-               # σ::Real=one(eltype(tmp))
-               σ=1.
-               ) where {n}
-    G = Manifolds.GeneralUnitaryMultiplicationGroup(M)
-    if vector_at === nothing
-        res = randn_pt(rng, G; σ)
-    else # vector_at isa Identity
-        res = randn_vec(rng, G; σ)
-    # else
-    #     throw(ErrorException("Only tangent vector at identity supported"))
-    end
-    copyto!(tmp, res)
-    return tmp
+@testset "eltype rand_lie" begin
+    G = MultiAffine(Unitary(4), 3)
+    @test eltype(rand_lie(rng, G)) <: Complex
 end
 
 
