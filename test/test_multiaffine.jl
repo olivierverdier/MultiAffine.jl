@@ -206,6 +206,24 @@ end
         @test !isa(GA, MultiAffine{typeof(Orthogonal(5)), 5, 3, ℝ})
         @test isa(MultiAffine(Unitary(4), 5), MultiAffine)
     end
+"""
+    check_exp_lie_point(G, ξ)
+
+The Lie group exponential sends the vector ξ
+to an element in the group.
+"""
+check_exp_lie_point(G, ξ) = is_point(G, exp_lie(G, ξ))
+
+"""
+    check_adjoint_action_in_alg(G, χ, ξ)
+
+The adjoint action of χ on ξ is an element of Alg(G):
+```math
+Ad_{χ}ξ ∈ Alg(G)
+```
+"""
+check_adjoint_action_in_alg(G, χ, ξ) = is_vector(G, identity_element(G), adjoint_action(G, χ, ξ))
+
 end
 
 function test_multi_affine(rng, G::MultiAffine{TH,dim,size,𝔽}
