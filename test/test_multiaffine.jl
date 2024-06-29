@@ -13,8 +13,6 @@ rng = Random.default_rng()
 
 
 
-# TODO: this is also implemented in Motion.jl
-get_adjoint_matrix(G, vel, B::AbstractBasis) = GroupTools.matrix_from_lin_endomorphism(G, ξ -> lie_bracket(G, vel, ξ), B)
 
 
 @testset "general $G" for G in [
@@ -199,13 +197,7 @@ end
         end
     end
 end
-    end
-    @testset "MultiAffine(G, size) creates proper type" begin
-        GA = MultiAffine(Orthogonal(4), 3)
-        @test isa(GA, MultiAffine{typeof(Orthogonal(4)), 4, 3, ℝ})
-        @test !isa(GA, MultiAffine{typeof(Orthogonal(5)), 5, 3, ℝ})
-        @test isa(MultiAffine(Unitary(4), 5), MultiAffine)
-    end
+
 """
     check_exp_lie_point(G, ξ)
 
@@ -224,68 +216,116 @@ Ad_{χ}ξ ∈ Alg(G)
 """
 check_adjoint_action_in_alg(G, χ, ξ) = is_vector(G, identity_element(G), adjoint_action(G, χ, ξ))
 
+"""
+    check_grp_rep_Identity(G)
+
+The representation works at the Identity(G) point.
+"""
+check_grp_rep_Identity(G, grp_rep) = begin
+    expected = grp_rep(G, identity_element(G))
+    computed = grp_rep(G, Identity(G))
+    return isapprox(expected, computed)
 end
 
-function test_multi_affine(rng, G::MultiAffine{TH,dim,size,𝔽}
-                           ) where {TH,dim,size,𝔽}
-  @testset "Test $(repr(G))" begin
-      vel = rand_lie(rng, G)
-      pt = rand(rng, G)
-      x = exp_lie(G, vel)
-      @test is_point(G, x)
-      v_ = adjoint_action(G, pt, vel)
-      @test is_vector(G, identity_element(G), v_)
-      affine_matrix(G, Identity(G))
-      @testset "zero_element" begin
-          z = zero_vector(G, Identity(G))
-          z_ = zero_vector(G, identity_element(G))
-          @test isapprox(G, z, z_)
-      end
-      @testset "from/to" begin
-          ts = randn(rng, dim, size)
-          χ1 = from_normal_grp(G, eachcol(ts)...)
-          χ2 = from_normal_grp(G, ts)
-          @test isapprox(G, χ1, χ2)
-          ξ1 = from_normal_alg(G, eachcol(ts)...)
-          ξ2 = from_normal_alg(G, ts)
-          @test isapprox(G, Identity(G), ξ1, ξ2)
-      end
-      @testset "Lie Bracket & matrix" begin
-          v1, v2 = [rand_lie(rng, G) for i in 1:2]
-          m1, m2 = [screw_matrix(G, v) for v in [v1,v2]]
-          comm = m1*m2 - m2*m1
-          expected = ArrayPartition(submanifold_components(G, comm)...)
-          computed = lie_bracket(G, v1, v2)
-          @test isapprox(G, Identity(G),  expected, computed)
-      end
-      @testset "Composition & matrix" begin
-          p1, p2 = [rand(rng, G) for i in 1:2]
-          m1, m2 = [affine_matrix(G, p) for p in [p1,p2]]
-          prod = m1*m2
-          expected = ArrayPartition(submanifold_components(G, prod)...)
-          computed = compose(G, p1, p2)
-          @test isapprox(G, expected, computed)
-      end
-  end
+check_zero_Identity(G) = isapprox(GroupTools.algebra(G),
+                                  zero_vector(G, Identity(G)),
+                                  zero_vector(G, identity_element(G)))
+
+check_from_normal_grp(G::MultiAffine, ts) = begin
+    χ1 = from_normal_grp(G, eachcol(ts)...)
+    χ2 = from_normal_grp(G, ts)
+    return isapprox(G, χ1, χ2)
+end
+
+check_from_normal_alg(G::MultiAffine, ts) = begin
+    ξ1 = from_normal_alg(G, eachcol(ts)...)
+    ξ2 = from_normal_alg(G, ts)
+    return isapprox(GroupTools.algebra(G), ξ1, ξ2)
+end
+
+"""
+    rand_trans(rng, G::MultiAffine)
+
+Random translation part of the group `G`.
+"""
+rand_trans(rng, G::MultiAffine{TH, dim, size}) where {TH, dim, size} = randn(rng, dim, size)
+
+@testset "from/to $G" for G in [MultiDisplacement(3,2)]
+    @testset "grp" begin
+        @test check_from_normal_grp(G, rand_trans(rng, G))
+    end
+    @testset "alg" begin
+        @test check_from_normal_alg(G, rand_trans(rng, G))
+    end
 end
 
 
-
-test_exp_ad(Random.default_rng(), MultiDisplacement(3, 2))
-
-@testset "MultiAffine" for G in
-    [
-        MultiDisplacement(3, 2),
-        # MultiAffine(Unitary(4), 3),
+@testset "Test $G" for G in [
+    MultiDisplacement(3,2),
+    MultiDisplacement(2),
+    MultiAffine(Unitary(3), 2),
     ]
-    # begin
-    test_multi_affine(Random.default_rng(), G)
+    @test check_grp_rep_Identity(G, affine_matrix)
+    vel = rand_lie(rng, G)
+    pt = rand(rng, G)
+    @test check_exp_lie_point(G, vel)
+    @test check_adjoint_action_in_alg(G, pt, vel)
+    @testset "zero_element" begin
+        @test check_zero_Identity(G)
+    end
+    @testset "Inverse & Matrix" begin
+        χ = rand(rng, G)
+        @test check_inv_rep(G, affine_matrix, χ)
+    end
     @testset "Adjoint action & matrix" begin
         χ = rand(rng, G)
         ξ = rand_lie(rng, G)
         @test check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
     end
+    @testset "Lie Bracket & matrix" begin
+        v1, v2 = [rand_lie(rng, G) for i in 1:2]
+        @test check_alg_rep(G, screw_matrix, v1, v2)
+    end
+    @testset "Composition & matrix" begin
+        p1, p2 = [rand(rng, G) for i in 1:2]
+        @test check_grp_rep_compose(G, affine_matrix, p1, p2)
+    end
 end
+
+"""
+    check_grp_rep_compose(G, ρ, χ1, χ2)
+
+The group representation ``ρ`` commutes with composition.
+```math
+ ρ(χ_1 χ_2) = ρ(χ_1) ρ(χ_2)
+```
+where the latter is a matrix multiplication.
+"""
+check_grp_rep_compose(G, grp_rep, χ1, χ2) = begin
+    m1, m2 = [grp_rep(G, p) for p in [χ1, χ2]]
+    expected = m1 * m2
+    computed = grp_rep(G, compose(G, χ1, χ2))
+    return isapprox(expected, computed)
+end
+
+"""
+    check_alg_rep(G, alg_rep, ξ1, ξ2)
+
+The algebra representation ``ρ`` is an algebra morphism.
+```math
+ρ([ξ_1, ξ_2]) = [ρ(ξ_1), ρ(ξ_2)]
+```
+where the latter is a matrix commutator.
+"""
+check_alg_rep(G, alg_rep, ξ1, ξ2) = begin
+    m1, m2 = [alg_rep(G, v) for v in [ξ1,ξ2]]
+    expected = m1*m2 - m2*m1
+    computed = alg_rep(G, lie_bracket(G, ξ1, ξ2))
+    return isapprox(expected, computed)
+end
+
+
+
 
 include("multiaffine/apply_diff_group.jl")
 include("multiaffine/inv_diff.jl")
