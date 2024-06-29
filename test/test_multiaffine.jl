@@ -125,6 +125,23 @@ check_adjoint_action(G, grp_rep, alg_rep, χ, ξ) = begin
     return isapprox(computed, expected)
 end
 
+
+"""
+    check_inv_rep(G, grp_rep, χ)
+
+The group representation ``ρ`` commutes with the inverse.
+```math
+ρ(χ)^{-1} = ρ(χ^{-1})
+```
+"""
+check_inv_rep(G, grp_rep, χ) = begin
+    computed = grp_rep(G, inv(G, χ))
+    expected = inv(grp_rep(G, χ))
+    return isapprox(computed, expected)
+end
+
+
+
 _switch_sign(ξ, ::LeftSide) = ξ
 _switch_sign(ξ, ::RightSide) = -ξ
 """
