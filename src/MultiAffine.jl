@@ -8,6 +8,8 @@ export MultiAffineGroup,
     to_normal_grp, to_normal_alg,
     normal_group, factor_group
 
+export MultiAffineAction, get_selector
+
 import Manifolds
 import ManifoldsBase
 import Manifolds: # Manifolds
@@ -34,7 +36,6 @@ import Manifolds:
 
 import LinearAlgebra
 
-export MultiAffineAction, get_selector
 
 include("Group.jl")
 include("MultiDisplacement.jl")
