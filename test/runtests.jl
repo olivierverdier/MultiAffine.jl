@@ -1,6 +1,8 @@
 using MultiAffine
 using Test
 
+import GroupTesting as GT
+
 test_files = [
     "test_group.jl",
     "test_action.jl",

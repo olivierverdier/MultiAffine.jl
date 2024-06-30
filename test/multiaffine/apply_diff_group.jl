@@ -1,6 +1,5 @@
 using Test
 using Manifolds
-import GroupTools
 import Random
 rng = Random.default_rng()
 
@@ -13,6 +12,6 @@ rng = Random.default_rng()
     χ2 = rand(rng, G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))
     @testset "$dir, $side" for side in [LeftSide(), RightSide()], dir in [LeftAction(), RightAction()]
-            @test GroupTools.check_apply_diff_group(GroupOperationAction(G, (dir, side)), χ1, ξ, χ2)
+            @test GT.check_apply_diff_group(GroupOperationAction(G, (dir, side)), χ1, ξ, χ2)
     end
 end

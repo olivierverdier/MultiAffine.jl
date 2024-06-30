@@ -1,7 +1,6 @@
 using Test
 using Manifolds
 import Random
-import GroupTools
 rng = Random.default_rng()
 
 
@@ -13,6 +12,6 @@ rng = Random.default_rng()
     χ = rand(rng, G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))
     @testset "$side" for side in [LeftSide(), RightSide()]
-        @test GroupTools.check_inv_diff(G, χ, ξ, side)
+        @test GT.check_inv_diff(G, χ, ξ, side)
     end
 end

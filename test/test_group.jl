@@ -1,7 +1,7 @@
 using Test
 using MultiAffine
 
-import GroupTools
+import GroupTools: algebra, rand_lie
 
 import ManifoldsBase as MB
 using Manifolds
@@ -11,8 +11,6 @@ import Random
 
 rng = Random.default_rng()
 
-
-include("group_testing.jl")
 
 
 
@@ -28,7 +26,7 @@ include("group_testing.jl")
     Random.seed!(rng, 3)
     n = 3
     pts = [rand(rng, G) for i in 1:n]
-    vels = [rand(rng, GroupTools.algebra(G)) for i in 1:n]
+    vels = [rand(rng, algebra(G)) for i in 1:n]
     Manifolds.test_group(G, pts, vels, vels,
         test_exp_lie_log=!isa(G, MultiAffineGroup{<:Unitary}),
         test_lie_bracket=true,
@@ -38,16 +36,6 @@ include("group_testing.jl")
 end
 
 
-
-# TODO: move to GroupTools
-function rand_lie(rng::AbstractRNG, G)
-    return rand(rng, GroupTools.algebra(G))
-end
-
-@testset "eltype rand_lie" begin
-    G = MultiAffineGroup(Unitary(4), 3)
-    @test eltype(rand_lie(rng, G)) <: Complex
-end
 
 
 
@@ -60,7 +48,7 @@ end
 ]
     vel = rand_lie(rng, G)
     tvel = rand_lie(rng, G)
-    @test check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
+    @test GT.check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
 end
 
 _adjoint_action(G::MultiAffineGroup, p, X) = begin
@@ -85,7 +73,7 @@ end
     ξ = rand_lie(rng, G)
     expected = _adjoint_action(G, χ, ξ)
     computed = adjoint_action(G, χ, ξ)
-    @test isapprox(GroupTools.algebra(G), expected, computed)
+    @test isapprox(algebra(G), expected, computed)
 end
 
 
@@ -95,8 +83,8 @@ end
     SpecialOrthogonal(3),
     ]
     @testset "$side" for side in [LeftSide(), RightSide()]
-        ξ = rand(rng, GroupTools.algebra(G))
-        @test check_apply_diff_group(G, ξ, side)
+        ξ = rand(rng, algebra(G))
+        @test GT.check_apply_diff_group_at_id(G, ξ, side)
     end
 end
 
@@ -131,7 +119,7 @@ end
 check_from_normal_alg(G::MultiAffineGroup, ts) = begin
     ξ1 = from_normal_alg(G, eachcol(ts)...)
     ξ2 = from_normal_alg(G, ts)
-    return isapprox(GroupTools.algebra(G), ξ1, ξ2)
+    return isapprox(algebra(G), ξ1, ξ2)
 end
 
 """
@@ -156,30 +144,30 @@ end
     MultiDisplacement(2),
     MultiAffineGroup(Unitary(3), 2),
     ]
-    @test check_grp_rep_Identity(G, affine_matrix)
+    @test GT.check_grp_rep_Identity(G, affine_matrix)
     vel = rand_lie(rng, G)
     pt = rand(rng, G)
-    @test check_exp_lie_point(G, vel)
-    @test check_adjoint_action_in_alg(G, pt, vel)
+    @test GT.check_exp_lie_point(G, vel)
+    @test GT.check_adjoint_action_in_alg(G, pt, vel)
     @testset "zero_element" begin
-        @test check_zero_Identity(G)
+        @test GT.check_zero_Identity(G)
     end
     @testset "Inverse & Matrix" begin
         χ = rand(rng, G)
-        @test check_inv_rep(G, affine_matrix, χ)
+        @test GT.check_inv_rep(G, affine_matrix, χ)
     end
     @testset "Adjoint action & matrix" begin
         χ = rand(rng, G)
         ξ = rand_lie(rng, G)
-        @test check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
+        @test GT.check_adjoint_action(G, affine_matrix, screw_matrix, χ, ξ)
     end
     @testset "Lie Bracket & matrix" begin
         v1, v2 = [rand_lie(rng, G) for i in 1:2]
-        @test check_alg_rep(G, screw_matrix, v1, v2)
+        @test GT.check_alg_rep(G, screw_matrix, v1, v2)
     end
     @testset "Composition & matrix" begin
         p1, p2 = [rand(rng, G) for i in 1:2]
-        @test check_grp_rep_compose(G, affine_matrix, p1, p2)
+        @test GT.check_grp_rep_compose(G, affine_matrix, p1, p2)
     end
 end
 

@@ -6,7 +6,6 @@ import Random: default_rng
 
 rng = default_rng()
 
-include("action_testing.jl")
 
 """
     random_multiaffine_action(rng, G::MultiAffineGroup, conv)
@@ -28,7 +27,7 @@ end
     χ1 = rand(rng, G)
     χ2 = rand(rng, G)
     p = rand(rng, group_manifold(A))
-    @test check_action_morphism(A, χ1, χ2, p)
+    @test GT.check_action_morphism(A, χ1, χ2, p)
 end
 
 
@@ -58,6 +57,35 @@ get_size(::MultiAffineGroup{<:Any,<:Any,size}) where {size} = size
 get_dim(::MultiAffineGroup{<:Any,dim}) where {dim} = dim
 
 
+inverse_if(::Any, χ, ::LeftAction) = χ
+inverse_if(G, χ, ::RightAction) = inv(G, χ)
+
+"""
+    check_selector(G::MultiDisplacement, χ, k, conv)
+
+For a multiaffine action ``α`` with selector
+```math
+s = [0,...,1,...0]
+```
+with a one at the ``k``th place, one should have
+```math
+α([M,R], 0) = M[:,k]
+```
+that is, the action on zero “selects”
+the ``k``th column of ``M``.
+"""
+check_selector(G::MultiDisplacement{<:Any,size}, χ, k, conv) where {size} = begin
+    sel = zeros(size)
+    sel[k] = 1.0
+    A = MultiAffineAction(G, sel, conv)
+    dim = manifold_dimension(group_manifold(A))
+    p = zeros(dim)
+    computed = apply(A, χ, p)
+    expected = to_normal_grp(G, inverse_if(G, χ, conv))[:, k]
+    return isapprox(group_manifold(A), computed, expected)
+end
+
+
 @testset "Test Multiaffine Action" for G in [MultiDisplacement(3,2)]
     for conv in [LeftAction(), RightAction()]
         @testset "Simple Selector" begin
@@ -72,12 +100,12 @@ get_dim(::MultiAffineGroup{<:Any,dim}) where {dim} = dim
         @testset "Apply identity" begin
             A = random_multiaffine_action(rng, G, conv)
             p = rand(rng, group_manifold(A))
-            check_apply_morphism_Identity(A, p)
+            GT.check_apply_morphism_Identity(A, p)
         end
         @testset "Trivial action" begin
             A = random_multiaffine_action(rng, G, conv)
             p = rand(rng, group_manifold(A))
-            @test check_trivial_infinitesimal_action(A, p)
+            @test GT.check_trivial_infinitesimal_action(A, p)
         end
     end
 end
@@ -127,7 +155,7 @@ end
                 A = MultiAffineAction(G, sel, conv)
                 χ = rand(rng, G)
                 p = rand(rng, group_manifold(A))
-                @test check_switch_action_direction(A, χ, p)
+                @test GT.check_switch_action_direction(A, χ, p)
             end
         end
     end
