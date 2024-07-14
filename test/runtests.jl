@@ -1,7 +1,7 @@
 using MultiAffine
 using Test
 
-import GroupTesting as GT
+import ManifoldGroupTesting as GT
 
 test_files = [
     "test_group.jl",

@@ -1,7 +1,7 @@
 using Test
 using MultiAffine
 
-import GroupTools: algebra, rand_lie
+import ManifoldGroupUtils: algebra, rand_lie
 
 import ManifoldsBase as MB
 using Manifolds
