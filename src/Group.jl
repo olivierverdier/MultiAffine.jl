@@ -25,11 +25,15 @@ An affine group modelling matrices of the form
 χ = \begin{bmatrix}
 \mathbf{1} & \mathbf{0} \\
 X & g
+\end{bmatrix}
 ```
 where ``g`` is a matrix element of the group ``G``, represented in dimension ``n``,
 and ``X`` is a ``n × k`` matrix.
 If we denote such an element by ``[X,g]``,
-the multiplication law is ``[X,g] [X',g'] = [X+gX';gg']``.
+the multiplication law is
+```math
+[X,g] [X',g'] = [X+gX';gg']
+```
 """
 function MultiAffineGroup(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)

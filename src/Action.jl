@@ -8,7 +8,10 @@
 Given a fixed vector ``S`` of size ``k`` (the `selector`) (or a matrix of size ``k×m``),
 this defines an action of the element ``[X;R]`` of the [`MultiAffineGroup`](@ref) group (so ``X`` is a ``n×k`` matrix and ``R`` is an element of a matrix group)
  on the vector ``p`` of size ``n`` (or the matrix ``p`` of size ``n×m``).
-The action is defined by ``[X;R]⋅p := XS+Rp``.
+The action is defined by
+```math
+[X;R]⋅p := XS+Rp
+```
 """
 struct MultiAffineAction{TAD<:ActionDirection,TG,TS<:AbstractArray} <: AbstractGroupAction{TAD}
     group::TG
@@ -27,7 +30,12 @@ function MultiAffineAction(
 end
 
 """
-In the case k=1, this is the standard affine action.
+    MultiAffineAction(
+      group::MultiAffineGroup{<:Any, <:Any, 1},
+      conv::ActionDirection=LeftAction()
+      )
+
+The standard affine action, obtained with a selector equal to ``[1]``.
 """
 function MultiAffineAction(
     group::MultiAffineGroup{<:Any, <:Any, 1},
