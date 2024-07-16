@@ -39,7 +39,6 @@ import LinearAlgebra
 
 include("Group.jl")
 include("MultiDisplacement.jl")
-include("rotation_action.jl")
 
 include("Action.jl")
 
