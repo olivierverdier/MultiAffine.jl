@@ -166,13 +166,14 @@ function Manifolds.exp_lie!(G::MultiAffineGroup, q, X)
     return q
 end
 
+include("Legacy.jl")
 
 Manifolds.adjoint_action!(G::MultiAffineGroup, tmp, p, X, ::LeftAction) = begin
     np, hp = submanifold_components(G, p)
     n, h = submanifold_components(G, tmp)
     nX, hX = submanifold_components(G, X)
     H = factor_group(G)
-    adjoint_action!(H, h, hp, hX, LeftAction())
+    adjoint_action!(H, h, hp, hX)
     A = G.op.action
     apply!(A, n, hp, nX)
     LinearAlgebra.axpy!(-1, apply_diff_group(A, Identity(H), h, np), n)
@@ -180,7 +181,6 @@ Manifolds.adjoint_action!(G::MultiAffineGroup, tmp, p, X, ::LeftAction) = begin
 end
 
 
-inverse_adjoint_action!(G::MultiAffineGroup, Y, p, X) = adjoint_action!(G, Y, inv(G,p), X)
 
 
 

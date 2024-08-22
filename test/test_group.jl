@@ -82,7 +82,7 @@ end
     SpecialEuclidean(3),
     SpecialOrthogonal(3),
     ]
-    @testset "$side" for side in [LeftSide(), RightSide()]
+    @testset "$G $side" for side in [LeftSide(), RightSide()]
         ξ = rand(rng, algebra(G))
         @test GT.check_apply_diff_group_at_id(G, ξ, side)
     end
