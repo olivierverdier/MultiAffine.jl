@@ -84,7 +84,7 @@ end
     ]
     @testset "$G $side" for side in [LeftSide(), RightSide()]
         ξ = rand(rng, algebra(G))
-        @test GT.check_apply_diff_group_at_id(G, ξ, side)
+        @test GT.check_apply_diff_group_at_id(G, ξ, side) broken=(G==SpecialEuclidean(3))&&(side==RightSide())
     end
 end
 

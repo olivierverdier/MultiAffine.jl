@@ -35,9 +35,8 @@ Manifolds.translate_diff!(
 
 Manifolds.inv_diff(::MultiAffineGroup, ::Identity, ξ) = -ξ
 Manifolds.inv_diff!(G::MultiAffineGroup, Y, p, X) = begin
-    adjoint_action!(G, Y, p, X)
+    adjoint_action!(G, Y, p, X, LeftAction())
     Y .*= -1
     return Y
 end
-
 
