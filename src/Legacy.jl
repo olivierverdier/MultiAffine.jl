@@ -1,7 +1,8 @@
-"""
+#================
 This file contains code which will appear in Manifolds.jl v0.10
 and is only needed for this package to work with older versions of Manifolds.jl.
-"""
+================#
+
 function Manifolds.adjoint_action(G::MultiAffineGroup, p, X, conv=LeftAction())
     tmp = allocate_result(G, adjoint_action, X)
     return adjoint_action!(G, tmp, p, X, conv)
