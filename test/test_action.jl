@@ -163,5 +163,7 @@ end
 
 @testset "MultiAffineAction(group, selector)" begin
     G = MultiDisplacement(3, 2)
-    @test_throws ["MethodError", "MultiAffineAction"] MultiAffineAction(G, RightAction())
+    if VERSION >= v"1.8"
+        @test_throws ["MethodError", "MultiAffineAction"] MultiAffineAction(G, RightAction())
+    end
 end
