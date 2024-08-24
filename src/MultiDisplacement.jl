@@ -7,10 +7,16 @@ const MultiDisplacement{dim,size} = MultiAffineGroup{
 }
 
 """
-    MultiDisplacement(n, size=1)
+    MultiDisplacement(n, k=1)
 
 A special case of the [`MultiAffineGroup`](@ref) group, where the
 underlying group is the special orthogonal group ``SO(n)``.
+This is just a convenient alias
+```julia
+MultiDisplacement(n, k=1) = MultiAffineGroup(SpecialOrthogonal(n), k)
+```
+
+When ``k=1`` (the default), this is the [*Special Euclidean Group*](https://en.wikipedia.org/wiki/Euclidean_group).
 """
 MultiDisplacement(dim::Integer, size::Integer=1) = MultiAffineGroup(SpecialOrthogonal(dim), size)
 
