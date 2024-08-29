@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/olivierverdier/MultiAffine.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/olivierverdier/MultiAffine.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/olivierverdier/MultiAffine.jl/graph/badge.svg?token=aTe2GSxvIw)](https://codecov.io/gh/olivierverdier/MultiAffine.jl)
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://olivierverdier.github.io/MultiAffine.jl/)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://olivierverdier.github.io/MultiAffine.jl/)
 
 
 This package models an affine group consisting of matrices of the form
