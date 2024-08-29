@@ -166,6 +166,13 @@ function Manifolds.exp_lie!(G::MultiAffineGroup, q, X)
     return q
 end
 
+using ManifoldGroupUtils
+
+Base.exp(G::MultiAffineGroup, χ, v) = ManifoldGroupUtils.exp_group(G, χ, v)
+Manifolds.exp!(G::MultiAffineGroup, tmp, χ, v) = ManifoldGroupUtils.exp_group!(G, tmp, χ, v)
+Base.log(G::MultiAffineGroup, χ1, χ2) = ManifoldGroupUtils.log_group(G, χ1, χ2)
+Manifolds.log!(G::MultiAffineGroup, tmp, χ1, χ2) = ManifoldGroupUtils.log_group!(G, tmp, χ1, χ2)
+
 include("Legacy.jl")
 
 Manifolds.adjoint_action!(G::MultiAffineGroup, tmp, p, X, ::LeftAction) = begin
