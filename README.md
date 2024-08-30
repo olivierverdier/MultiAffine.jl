@@ -28,7 +28,7 @@ G = MultiAffineGroup(Unitary(2), 2)
 identity_element(G) # ([0.0 0.0; 0.0 0.0], ComplexF64[1.0 + 0.0im 0.0 + 0.0im; 0.0 + 0.0im 1.0 + 0.0im])
 ```
 
-When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group), one can use the alias `MultiDisplacement(n,k)` to create the group `MultiAffine(SpecialOrthogonal(n), k)`, for instance:
+When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group), one can use the alias `MultiDisplacement(n,k)` to create the group `MultiAffineGroup(SpecialOrthogonal(n), k)`, for instance:
 ```julia
 G = MultiDisplacement(3,2)
 identity_element(G) # ([0.0 0.0; 0.0 0.0; 0.0 0.0], [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0])
