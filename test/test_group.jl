@@ -122,14 +122,16 @@ check_from_normal_alg(G::MultiAffineGroup, ts) = begin
     return isapprox(algebra(G), ξ1, ξ2)
 end
 
+
+
 """
     rand_trans(rng, G::MultiAffineGroup)
 
 Random translation part of the group `G`.
 """
-rand_trans(rng, G::MultiAffineGroup{TH, dim, size}) where {TH, dim, size} = randn(rng, dim, size)
+rand_trans(rng, G::MultiAffineGroup{<:Any,dim,size}) where {dim,size} = randn(rng, dim, size)
 
-@testset "from/to $G" for G in [MultiDisplacement(3,2)]
+@testset "from/to $G" for G in [MultiDisplacement(3, 2)]
     @testset "grp" begin
         @test check_from_normal_grp(G, rand_trans(rng, G))
     end
