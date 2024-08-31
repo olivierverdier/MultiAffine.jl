@@ -140,6 +140,19 @@ rand_trans(rng, G::MultiAffineGroup{<:Any,dim,size}) where {dim,size} = randn(rn
     end
 end
 
+check_indices(G::MultiAffineGroup, v, proj, ind) = begin
+    w = proj(G, v)
+    idx = eachindex(v)
+    return vec(w) == vec(v)[ind(G, idx)]
+end
+
+@testset "Indices" begin
+    G = MultiDisplacement(3,2)
+    χ = rand(rng, G)
+    @test check_indices(G, χ, MultiAffine.to_normal, MultiAffine.normal_indices)
+    @test check_indices(G, χ, MultiAffine.to_factor, MultiAffine.factor_indices)
+end
+
 
 @testset "Test $G" for G in [
     MultiDisplacement(3,2),
