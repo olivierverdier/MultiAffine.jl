@@ -1,3 +1,7 @@
+#================
+This file is only useful for backward compatibility with Manifolds < v"0.10"
+================#
+
 using Pkg
 _MANIFOLDS_VERSION = first([d.version for (u, d) in Pkg.dependencies() if d.name == "Manifolds"])
 
