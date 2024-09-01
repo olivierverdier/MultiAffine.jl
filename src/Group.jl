@@ -17,6 +17,8 @@ const MultiAffineGroup{G,dim,size,𝔽} = SemidirectProductGroup{
 
 const MultiAffineOp{G,dim,size,𝔽} = Manifolds.SemidirectProductOperation{MultiColumnwiseMultiplicationAction{G,dim,size,𝔽}}
 
+include("Legacy.jl")
+
 @doc raw"""
     MultiAffineGroup(G, k=1)
 
@@ -38,7 +40,7 @@ the multiplication law is
 function MultiAffineGroup(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)
     action = Manifolds.ColumnwiseMultiplicationAction(space, G)
-    group = GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))
+    group = _GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))
     return group
 end
 
@@ -173,7 +175,6 @@ Manifolds.exp!(G::MultiAffineGroup, tmp, χ, v) = ManifoldGroupUtils.exp_group!(
 Base.log(G::MultiAffineGroup, χ1, χ2) = ManifoldGroupUtils.log_group(G, χ1, χ2)
 Manifolds.log!(G::MultiAffineGroup, tmp, χ1, χ2) = ManifoldGroupUtils.log_group!(G, tmp, χ1, χ2)
 
-include("Legacy.jl")
 
 Manifolds.adjoint_action!(G::MultiAffineGroup, tmp, p, X, ::LeftAction) = begin
     np, hp = submanifold_components(G, p)

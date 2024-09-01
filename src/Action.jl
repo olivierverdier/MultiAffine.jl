@@ -55,7 +55,7 @@ Manifolds.group_manifold(A::MultiAffineAction{<:Any,<:MultiAffineGroup{<:Any, di
 
 get_selector(A::MultiAffineAction) = A.selector
 
-Manifolds.apply(::MultiAffineAction{<:Any, MultiAffineGroup{TH,dim,size,𝔽}},
+Manifolds.apply(::MultiAffineAction{<:Any, <:MultiAffineGroup{TH,dim,size,𝔽}},
                 ::Identity{MultiAffineOp{TH,dim,size,𝔽}}, p) where {TH,dim,size,𝔽} = p
 
 function Manifolds.apply!(
@@ -79,7 +79,7 @@ Manifolds.apply!(A::MultiAffineAction{RightAction}, q, χ, p) = apply!(switch_di
 
 
 function Manifolds.apply_diff_group(
-    A::MultiAffineAction{LeftAction, MultiAffineGroup{TH,dim,size,𝔽}},
+    A::MultiAffineAction{LeftAction, <:MultiAffineGroup{TH,dim,size,𝔽}},
     ::Identity{MultiAffineOp{TH,dim,size,𝔽}},
     ξ,
     p
@@ -93,7 +93,7 @@ end
 
 
 function Manifolds.apply_diff_group(
-    A::MultiAffineAction{RightAction,MultiAffineGroup{TH,dim,size,𝔽}},
+    A::MultiAffineAction{RightAction, <:MultiAffineGroup{TH,dim,size,𝔽}},
     I::Identity{MultiAffineOp{TH,dim,size,𝔽}},
     ξ,
     p

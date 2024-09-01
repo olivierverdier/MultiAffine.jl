@@ -9,11 +9,13 @@ ManifoldGroupTesting = "3d9140b9-2699-468e-abff-6b59d65ee1fd"
 ManifoldGroupUtils = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
 Manifolds = "1cead3c2-87b3-11e9-0ccd-23c62b72b94e"
 ManifoldsBase = "3362f125-f0bb-47a3-aa74-596ffd7ef2fb"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
 
 [compat]
 ManifoldGroupTesting = "0.2"
 ManifoldGroupUtils = "0.2.1"
-Manifolds = "0.9.18"
+Manifolds = "0.9.18, 0.10"
 ManifoldsBase = "0.15"
 julia = "1.6.7"
 
