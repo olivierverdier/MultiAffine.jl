@@ -1,4 +1,3 @@
-
 using Pkg
 _MANIFOLDS_VERSION = first([d.version for (u, d) in Pkg.dependencies() if d.name == "Manifolds"])
 

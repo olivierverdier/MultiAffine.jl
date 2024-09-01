@@ -17,7 +17,7 @@ const MultiAffineGroup{G,dim,size,𝔽} = SemidirectProductGroup{
 
 const MultiAffineOp{G,dim,size,𝔽} = Manifolds.SemidirectProductOperation{MultiColumnwiseMultiplicationAction{G,dim,size,𝔽}}
 
-include("Legacy.jl")
+include("Compat.jl")
 
 @doc raw"""
     MultiAffineGroup(G, k=1)
