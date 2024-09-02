@@ -146,11 +146,18 @@ check_indices(G::MultiAffineGroup, v, proj, ind) = begin
     return vec(w) == vec(v)[ind(G, idx)]
 end
 
-@testset "Indices" begin
-    G = MultiDisplacement(3,2)
+check_proj_point(G, subman, proj, χ) = is_point(subman, proj(G, χ))
+
+@testset "Proj/Indices $G" for G in
+    [MultiDisplacement(3,2)]
     χ = rand(rng, G)
     @test check_indices(G, χ, MultiAffine.to_normal, MultiAffine.normal_indices)
     @test check_indices(G, χ, MultiAffine.to_factor, MultiAffine.factor_indices)
+    @test check_proj_point(G, factor_group(G), to_factor_grp, χ)
+    @test check_proj_point(G, normal_group(G), to_normal_grp, χ)
+    ξ = rand_lie(rng, G)
+    @test check_proj_point(G, algebra(normal_group(G)), to_normal_alg, ξ)
+    @test check_proj_point(G, algebra(factor_group(G)), to_factor_alg, ξ)
 end
 
 
