@@ -6,7 +6,7 @@ rng = Random.default_rng()
 
 
 @testset "apply_diff_group $G" for
-    G in [MultiDisplacement(3, 2), MultiDisplacement(2)]
+    G in [MultiDisplacementGroup(3, 2), MultiDisplacementGroup(2)]
     χ1 = rand(rng, G)
     χ2 = rand(rng, G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))

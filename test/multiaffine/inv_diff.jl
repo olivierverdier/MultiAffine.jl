@@ -8,7 +8,7 @@ rng = Random.default_rng()
 
 
 @testset "inv_diff" begin
-    G = MultiDisplacement(3, 2)
+    G = MultiDisplacementGroup(3, 2)
     χ = rand(rng, G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))
     @testset "$side" for side in [LeftSide(), RightSide()]

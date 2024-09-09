@@ -15,8 +15,8 @@ rng = Random.default_rng()
 
 
 @testset "general $G" for G in [
-    MultiDisplacement(3, 2),
-    MultiDisplacement(2),
+    MultiDisplacementGroup(3, 2),
+    MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(2), 2),
 ]
     # the following seed is necessary,
@@ -42,8 +42,8 @@ end
 
 
 @testset "exp (ad_ξ) = Ad_exp(ξ)" for G in [
-    MultiDisplacement(3,2),
-    MultiDisplacement(2),
+    MultiDisplacementGroup(3,2),
+    MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(3), 3), # broken: exp(ad_{ξ}) cannot be computed
 ]
     vel = rand_lie(rng, G)
@@ -65,8 +65,8 @@ _adjoint_action!(G::MultiAffineGroup, tmp, p, X) = begin
 end
 
 @testset "Compare Adjoint Implementations" for G in [
-    MultiDisplacement(3, 2),
-    MultiDisplacement(2),
+    MultiDisplacementGroup(3, 2),
+    MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(3), 2),
 ]
     χ = rand(rng, G)
@@ -78,7 +78,7 @@ end
 
 
 @testset "Diff $G" for G in [
-    MultiDisplacement(3, 2),
+    MultiDisplacementGroup(3, 2),
     SpecialEuclidean(3),
     SpecialOrthogonal(3),
     ]
@@ -89,14 +89,14 @@ end
 end
 
 @testset "Test types" begin
-    @testset "MultiDisplacement($dim,$size) creates proper type" for dim in [4]
+    @testset "MultiDisplacementGroup($dim,$size) creates proper type" for dim in [4]
         for size in [2]
             dim = 4
             size = 2
-            GM = MultiDisplacement(dim, size)
-            @test isa(GM, MultiDisplacement{dim,size})
-            @test !isa(GM, MultiDisplacement{dim,size + 5})
-            @test !isa(GM, MultiDisplacement{dim + 1,size})
+            GM = MultiDisplacementGroup(dim, size)
+            @test isa(GM, MultiDisplacementGroup{dim,size})
+            @test !isa(GM, MultiDisplacementGroup{dim,size + 5})
+            @test !isa(GM, MultiDisplacementGroup{dim + 1,size})
         end
     end
     @testset "MultiAffineGroup(G, $size) creates proper type" for dim in [4]
@@ -131,7 +131,7 @@ Random translation part of the group `G`.
 """
 rand_trans(rng, G::MultiAffineGroup{<:Any,dim,size}) where {dim,size} = randn(rng, dim, size)
 
-@testset "from/to $G" for G in [MultiDisplacement(3, 2)]
+@testset "from/to $G" for G in [MultiDisplacementGroup(3, 2)]
     @testset "grp" begin
         @test check_from_normal_grp(G, rand_trans(rng, G))
     end
@@ -149,7 +149,7 @@ end
 check_proj_point(G, subman, proj, χ) = is_point(subman, proj(G, χ))
 
 @testset "Proj/Indices $G" for G in
-    [MultiDisplacement(3,2)]
+    [MultiDisplacementGroup(3,2)]
     χ = rand(rng, G)
     @test check_indices(G, χ, MultiAffine.to_normal, MultiAffine.normal_indices)
     @test check_indices(G, χ, MultiAffine.to_factor, MultiAffine.factor_indices)
@@ -162,8 +162,8 @@ end
 
 
 @testset "Test $G" for G in [
-    MultiDisplacement(3,2),
-    MultiDisplacement(2),
+    MultiDisplacementGroup(3,2),
+    MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(3), 2),
     ]
     @test GT.check_grp_rep_Identity(G, affine_matrix)
@@ -194,7 +194,7 @@ end
 end
 
 
-@testset for G in [MultiDisplacement(3,2)]
+@testset for G in [MultiDisplacementGroup(3,2)]
     χ1, χ2 = [rand(rng, G) for i in 1:2]
     ξ1, ξ2 = [rand_lie(rng, G) for i in 1:2]
     v1 = translate_from_id(G, χ1, ξ1, LeftSide())

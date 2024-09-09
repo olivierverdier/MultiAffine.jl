@@ -3,6 +3,7 @@ module MultiAffine
 # MultiAffine
 export MultiAffineGroup,
     MultiDisplacement,
+    MultiDisplacementGroup,
     from_normal_grp, from_normal_alg,
     to_factor_grp, to_factor_alg,
     to_normal_grp, to_normal_alg,

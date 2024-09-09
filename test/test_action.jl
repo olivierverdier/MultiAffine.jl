@@ -20,8 +20,8 @@ end
 
 
 @testset "Test action morphism $G $conv" for G in [
-    MultiDisplacement(4,2),
-    MultiDisplacement(4),
+    MultiDisplacementGroup(4,2),
+    MultiDisplacementGroup(4),
     ], conv in [LeftAction(), RightAction()]
     A = random_multiaffine_action(rng, G, conv)
     χ1 = rand(rng, G)
@@ -61,7 +61,7 @@ inverse_if(::Any, χ, ::LeftAction) = χ
 inverse_if(G, χ, ::RightAction) = inv(G, χ)
 
 """
-    check_selector(G::MultiDisplacement, χ, k, conv)
+    check_selector(G::MultiDisplacementGroup, χ, k, conv)
 
 For a multiaffine action ``α`` with selector
 ```math
@@ -74,7 +74,7 @@ with a one at the ``k``th place, one should have
 that is, the action on zero “selects”
 the ``k``th column of ``M``.
 """
-check_selector(G::MultiDisplacement{<:Any,size}, χ, k, conv) where {size} = begin
+check_selector(G::MultiDisplacementGroup{<:Any,size}, χ, k, conv) where {size} = begin
     sel = zeros(size)
     sel[k] = 1.0
     A = MultiAffineAction(G, sel, conv)
@@ -86,7 +86,7 @@ check_selector(G::MultiDisplacement{<:Any,size}, χ, k, conv) where {size} = beg
 end
 
 
-@testset "Test Multiaffine Action" for G in [MultiDisplacement(3,2)]
+@testset "Test Multiaffine Action" for G in [MultiDisplacementGroup(3,2)]
     for conv in [LeftAction(), RightAction()]
         @testset "Simple Selector" begin
             k = rand(rng, eachindex(zeros(get_size(G))))
@@ -111,7 +111,7 @@ end
 end
 
 @testset "default selector" for dim in [3]
-    se = MultiDisplacement(dim, 1)
+    se = MultiDisplacementGroup(dim, 1)
     @test check_default_selector(se)
 end
 
@@ -134,8 +134,8 @@ end
 
 
 @testset "MultiAffineAction apply $G×$prod" for G in [
-    MultiDisplacement(3, 2),
-    MultiDisplacement(2)
+    MultiDisplacementGroup(3, 2),
+    MultiDisplacementGroup(2)
     ]
     for prod in [1, 2]
         size = get_size(G)
@@ -162,7 +162,7 @@ end
 end
 
 @testset "MultiAffineAction(group, selector)" begin
-    G = MultiDisplacement(3, 2)
+    G = MultiDisplacementGroup(3, 2)
     if VERSION >= v"1.8"
         @test_throws ["MethodError", "MultiAffineAction"] MultiAffineAction(G, RightAction())
     end
