@@ -158,6 +158,11 @@ check_proj_point(G, subman, proj, χ) = is_point(subman, proj(G, χ))
     ξ = rand_lie(rng, G)
     @test check_proj_point(G, algebra(normal_group(G)), to_normal_alg, ξ)
     @test check_proj_point(G, algebra(factor_group(G)), to_factor_alg, ξ)
+    @testset for pos in 0:1
+        ind_pos(G, idx) = MultiAffine.normal_indices_at(G, idx, pos)
+        proj_pos(G, x) = MultiAffine.to_normal(G, x)[:,pos+1]
+        @test check_indices(G, χ, proj_pos, ind_pos)
+    end
 end
 
 

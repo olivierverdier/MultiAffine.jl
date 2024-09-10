@@ -248,6 +248,14 @@ return the indices of the normal component `X`.
 normal_indices(::MultiAffineGroup{<:Any,dim,size}, idx) where {dim,size} = collect(Iterators.take(idx, dim * size))
 
 """
+    normal_indices_at(G::MultiAffine, idx, pos=0)
+
+If ``[X,R]`` is an element of the group ``G``,
+return the indices of the column vector at position `pos` (starting at zero).
+"""
+normal_indices_at(G::MultiAffineGroup{<:Any,dim}, idx, pos=0) where {dim} = collect(Iterators.take(Iterators.drop(normal_indices(G, idx), pos * dim), dim))
+
+"""
     factor_indices(G::MultiAffineGroup{<:Any, dim, size}, idx)
 
 If ``[X,R]`` is an element of the group ``G``,
