@@ -239,5 +239,18 @@ to_normal(G::MultiAffineGroup, pt) = submanifold_component(G, pt, 1)
 to_normal_grp(G::MultiAffineGroup, χ) = to_normal(G, χ)
 to_normal_alg(G::MultiAffineGroup, ξ) = to_normal(G, ξ)
 
-normal_indices(::MultiAffineGroup{<:Any, dim, size}, idx; pos=0) where {dim, size} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim*size))
+"""
+    normal_indices(::MultiAffineGroup, idx)
+
+If ``[X,R]`` is an element of the group ``G``,
+return the indices of the normal component `X`.
+"""
+normal_indices(::MultiAffineGroup{<:Any,dim,size}, idx) where {dim,size} = collect(Iterators.take(idx, dim * size))
+
+"""
+    factor_indices(G::MultiAffineGroup{<:Any, dim, size}, idx)
+
+If ``[X,R]`` is an element of the group ``G``,
+return the indices of the factor component `R`.
+"""
 factor_indices(::MultiAffineGroup{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))
