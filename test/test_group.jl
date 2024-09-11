@@ -1,4 +1,3 @@
-using Test
 using MultiAffine
 
 import ManifoldGroupUtils: algebra, rand_lie, translate_from_id
@@ -48,7 +47,7 @@ end
 ]
     vel = rand_lie(rng, G)
     tvel = rand_lie(rng, G)
-    @test GT.check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
+    Test.@test GT.check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
 end
 
 _adjoint_action(G::MultiAffineGroup, p, X) = begin
@@ -84,7 +83,7 @@ end
     ]
     @testset "$G $side" for side in [LeftSide(), RightSide()]
         ξ = rand(rng, algebra(G))
-        @test GT.check_apply_diff_group_at_id(G, ξ, side) broken=(G==SpecialEuclidean(3))&&(side==RightSide())&&(MultiAffine._MANIFOLDS_VERSION < v"0.10")
+        Test.@test GT.check_apply_diff_group_at_id(G, ξ, side) broken=(G==SpecialEuclidean(3))&&(side==RightSide())&&(MultiAffine._MANIFOLDS_VERSION < v"0.10")
     end
 end
 

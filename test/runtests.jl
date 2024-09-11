@@ -1,5 +1,6 @@
+include("header.jl")
+
 using MultiAffine
-using Test
 
 import ManifoldGroupTesting as GT
 
