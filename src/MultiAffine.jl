@@ -15,6 +15,8 @@ import RecursiveArrayTools
 import ManifoldsBase
 using Manifolds
 
+using ManifoldGroupUtils
+
 import LinearAlgebra
 
 

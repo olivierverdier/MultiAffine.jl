@@ -168,7 +168,6 @@ function Manifolds.exp_lie!(G::MultiAffineGroup, q, X)
     return q
 end
 
-using ManifoldGroupUtils
 
 Base.exp(G::MultiAffineGroup, χ, v) = ManifoldGroupUtils.exp_group(G, χ, v)
 Manifolds.exp!(G::MultiAffineGroup, tmp, χ, v) = ManifoldGroupUtils.exp_group!(G, tmp, χ, v)
