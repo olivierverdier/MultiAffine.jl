@@ -251,7 +251,7 @@ normal_indices(::MultiAffineGroup{<:Any,dim,size}, idx) where {dim,size} = colle
     normal_indices_at(G::MultiAffine, idx, pos=0)
 
 If ``[X,R]`` is an element of the group ``G``,
-return the indices of the column vector at position `pos` (starting at zero).
+return the indices of the column vector of ``X`` at offset `pos` (starting at zero).
 """
 normal_indices_at(G::MultiAffineGroup{<:Any,dim}, idx, pos=0) where {dim} = collect(Iterators.take(Iterators.drop(normal_indices(G, idx), pos * dim), dim))
 
