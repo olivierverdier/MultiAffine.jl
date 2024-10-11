@@ -5,22 +5,31 @@
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://olivierverdier.github.io/MultiAffine.jl/)
 
 
-This package models an affine group consisting of matrices of the form
+Given a group $`H`$, represented in dimension $`n`$ over some field $\mathbf{F}$
+this package implements the group
 ```math
-χ = \begin{bmatrix}
+(\mathbf{F}^n)^k \rtimes H
+```
+The group consists of matrices of the form
+```math
+[X;h] \equiv \begin{bmatrix}
 \mathbf{1} & \mathbf{0} \\
 X & h
 \end{bmatrix}
 ```
-where $`h`$ is a matrix element of some group $`H`$, represented in dimension $`n`$,
+where $`h`$ is a matrix belonging to the group $H$,
 and $`X`$ is a $`n × k`$ matrix.
 If we denote such an element by $`[X,h]`$,
 the multiplication law is
 ```math
-[X,h] [X',h'] = [X+hX';hh']
+[X;h] [X';h'] = [X+hX';hh']
 ```
 
-One example of such group is
+For instance, to implement the group
+```math
+(\mathbf{C}^2)^2 \rtimes U(2)
+```
+you can use
 ```julia
 using MultiAffine
 using Manifolds
@@ -28,7 +37,12 @@ G = MultiAffineGroup(Unitary(2), 2)
 identity_element(G) # ([0.0 0.0; 0.0 0.0], ComplexF64[1.0 + 0.0im 0.0 + 0.0im; 0.0 + 0.0im 1.0 + 0.0im])
 ```
 
-When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group), one can use the alias `MultiDisplacementGroup(n,k)` to create the group `MultiAffineGroup(SpecialOrthogonal(n), k)`, for instance:
+When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group) $SO(n)$, one can use the alias `MultiDisplacementGroup(n,k)` to implement the group
+```math
+(\mathbf{R}^n)^k \rtimes SO(n)
+```
+This has the same effect as calling `MultiAffineGroup(SpecialOrthogonal(n), k)`. 
+
 ```julia
 G = MultiDisplacementGroup(3,2)
 identity_element(G) # ([0.0 0.0; 0.0 0.0; 0.0 0.0], [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0])
