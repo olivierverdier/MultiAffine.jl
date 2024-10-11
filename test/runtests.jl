@@ -9,8 +9,4 @@ test_files = [
     "test_action.jl",
 ]
 
-@time @testset " " for path in test_files
-    printstyled("─"^16 * "[ $path ]\n"; color=:yellow)
-    @time include(path)
-end
-
+include_tests(test_files)

@@ -1,5 +1,5 @@
 import Test
-import Test: @testset
+import Test: @testset, @test_throws, @test_logs
 
 """
 A replacement to the @test macro
@@ -22,5 +22,12 @@ macro test(ex)
                 end
             end
         end
+    end
+end
+
+include_tests(paths; color=:yellow, line_width=16, limit=13) = begin
+    @time @testset "$(first(chop(path, tail=3), limit))" for path in paths
+        printstyled("─"^line_width * "[ $path ]\n"; color=color)
+        @time include(path)
     end
 end
