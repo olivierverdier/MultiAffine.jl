@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://olivierverdier.github.io/MultiAffine.jl/)
 
 
-Given a group $`H`$, represented in dimension $`n`$ over some field $\mathbf{F}$
+Given a group $`H`$, represented in dimension $`n`$ over some field $`\mathbf{F}`$
 this package implements the group
 ```math
 (\mathbf{F}^n)^k \rtimes H
@@ -17,9 +17,9 @@ The group consists of matrices of the form
 X & h
 \end{bmatrix}
 ```
-where $`h`$ is a matrix belonging to the group $H$,
+where $`h`$ is a matrix belonging to the group $`H`$,
 and $`X`$ is a $`n × k`$ matrix.
-If we denote such an element by $`[X,h]`$,
+If we denote such an element by $`[X;h]`$,
 the multiplication law is
 ```math
 [X;h] [X';h'] = [X+hX';hh']
@@ -37,7 +37,7 @@ G = MultiAffineGroup(Unitary(2), 2)
 identity_element(G) # ([0.0 0.0; 0.0 0.0], ComplexF64[1.0 + 0.0im 0.0 + 0.0im; 0.0 + 0.0im 1.0 + 0.0im])
 ```
 
-When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group) $SO(n)$, one can use the alias `MultiDisplacementGroup(n,k)` to implement the group
+When the group $`H`$ is the [special orthogonal group](https://en.wikipedia.org/wiki/Orthogonal_group) $`SO(n)`$, one can use the alias `MultiDisplacementGroup(n,k)` to implement the group
 ```math
 (\mathbf{R}^n)^k \rtimes SO(n)
 ```
