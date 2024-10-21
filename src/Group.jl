@@ -154,7 +154,7 @@ end
 
 function Manifolds._log_lie!(G::MultiAffineGroup, X, q)
     qmat = affine_matrix(G, q)
-    Xmat = real(Manifolds.log_safe(qmat))
+    Xmat = Manifolds.log_safe(qmat)
     map(copyto!, submanifold_components(G, X), submanifold_components(G, Xmat))
     Manifolds._padvector!(G, X)
     return X

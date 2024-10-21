@@ -13,6 +13,8 @@ rng = Random.default_rng()
 group_list = [
     MultiDisplacementGroup(3, 2),
     MultiDisplacementGroup(2),
+    MultiAffineGroup(Unitary(2), 2),
+    MultiAffineGroup(Unitary(3), 2),
 ]
 
 
