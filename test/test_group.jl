@@ -32,7 +32,7 @@ group_list = [
     Manifolds.test_group(
         G, pts, vels, vels,
         test_exp_lie_log=!isa(G, MultiAffineGroup{<:Unitary}),
-        test_lie_bracket=false, # TODO: remove
+        test_lie_bracket=true,
         test_adjoint_action=true,
         test_diff=true,
     )
@@ -225,10 +225,6 @@ alg_rep(G::MultiAffineGroup, x) = screw_matrix(G, x)
         ("exp_lie_ad", [χ1, ξ1]),
     ]
     for (name, args) in tests
-        # TODO: remove
-        if (G isa MultiDisplacementGroup{2}) && (name == "adjoint_action_lie_bracket")
-            continue
-        end
         run_test(G, name, args)
     end
 

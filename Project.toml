@@ -15,7 +15,7 @@ RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
 [compat]
 ManifoldGroupTesting = "0.2.4"
 ManifoldGroupUtils = "0.2.1"
-Manifolds = "0.10"
+Manifolds = "0.10.4"
 ManifoldsBase = "0.15"
 RecursiveArrayTools = "2, 3"
 julia = "1.6.7"
