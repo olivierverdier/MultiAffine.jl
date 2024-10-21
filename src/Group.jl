@@ -35,7 +35,7 @@ the multiplication law is
 [X,g] [X',g'] = [X+gX';gg']
 ```
 """
-function MultiAffineGroup(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
+function MultiAffineGroup(G::Manifolds.MatrixGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)
     action = Manifolds.ColumnwiseMultiplicationAction(space, G)
     group = GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))

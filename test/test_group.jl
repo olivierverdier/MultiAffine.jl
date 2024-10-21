@@ -15,6 +15,7 @@ group_list = [
     MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(2), 2),
     MultiAffineGroup(Unitary(3), 2),
+    MultiAffineGroup(GeneralLinear(2)),
 ]
 
 
@@ -228,8 +229,14 @@ alg_rep(G::MultiAffineGroup, x) = screw_matrix(G, x)
         run_test(G, name, args)
     end
 
+    missing_method = ""
     if G isa AbstractDecoratorManifold{ℂ}
-        @test_throws MethodError GT.check_exp_ad(G, ξ1, ξ2)
+        missing_method = "check_exp_ad"
+    elseif G isa MultiAffineGroup{<:GeneralLinear}
+        missing_method = "get_coordinates_orthonormal"
+    end
+    if missing_method != ""
+        @test_throws ["MethodError", missing_method] GT.check_exp_ad(G, ξ1, ξ2)
     else
         run_test(G, "exp_ad", [ξ1, ξ2])
     end
