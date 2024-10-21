@@ -194,7 +194,7 @@ end
 
 run_test(G, name, args) = begin
     @testset "$name" begin
-        @test getfield(GT, Symbol("check_"*name))(G, args...)
+        Test.@test getfield(GT, Symbol("check_"*name))(G, args...)
     end
 end
 
