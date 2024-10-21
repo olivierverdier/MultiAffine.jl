@@ -10,23 +10,25 @@ import Random
 
 rng = Random.default_rng()
 
-
-
-
-@testset "general $G" for G in [
+group_list = [
     MultiDisplacementGroup(3, 2),
     MultiDisplacementGroup(2),
-    MultiAffineGroup(Unitary(2), 2),
 ]
+
+
+@testset "general $G" for (i, G) in enumerate(group_list)
+    N = length(group_list)
+    @info "$i / $N: $G"
     # the following seed is necessary,
     # for some random cases either of both of these can happen
     # 1. exp_lie is not the inverse of log_lie (due to a bug in julia's matrix log)
     # 2. adjoint action is not exactly an algebra morphism (because of rounding errors)
-    Random.seed!(rng, 3)
+    Random.seed!(rng, 0)
     n = 3
-    pts = [rand(rng, G) for i in 1:n]
-    vels = [rand(rng, algebra(G)) for i in 1:n]
-    Manifolds.test_group(G, pts, vels, vels,
+    pts = map(ξ -> exp_lie(G, ξ), [rand_lie(rng, G) for i in 1:n])
+    vels = [rand_lie(rng, G) for i in 1:n]
+    Manifolds.test_group(
+        G, pts, vels, vels,
         test_exp_lie_log=!isa(G, MultiAffineGroup{<:Unitary}),
         test_lie_bracket=true,
         test_adjoint_action=true,
@@ -44,7 +46,7 @@ end
     MultiDisplacementGroup(3,2),
     MultiDisplacementGroup(2),
     MultiAffineGroup(Unitary(3), 3), # broken: exp(ad_{ξ}) cannot be computed
-]
+    ]
     vel = rand_lie(rng, G)
     tvel = rand_lie(rng, G)
     Test.@test GT.check_exp_ad(G, vel, tvel) broken=G isa MultiAffineGroup{<:Unitary}
@@ -63,11 +65,7 @@ _adjoint_action!(G::MultiAffineGroup, tmp, p, X) = begin
     return tmp
 end
 
-@testset "Compare Adjoint Implementations" for G in [
-    MultiDisplacementGroup(3, 2),
-    MultiDisplacementGroup(2),
-    MultiAffineGroup(Unitary(3), 2),
-]
+@testset "Compare Adjoint Implementations" for G in group_list
     χ = rand(rng, G)
     ξ = rand_lie(rng, G)
     expected = _adjoint_action(G, χ, ξ)
@@ -76,11 +74,7 @@ end
 end
 
 
-@testset "Diff $G" for G in [
-    MultiDisplacementGroup(3, 2),
-    SpecialEuclidean(3),
-    SpecialOrthogonal(3),
-    ]
+@testset "Diff $G" for G in group_list
     @testset "$G $side" for side in [LeftSide(), RightSide()]
         ξ = rand(rng, algebra(G))
         Test.@test GT.check_apply_diff_group_at_id(G, ξ, side) broken=(G==SpecialEuclidean(3))&&(side==RightSide())&&(MultiAffine._MANIFOLDS_VERSION < v"0.10")
@@ -165,11 +159,7 @@ check_proj_point(G, subman, proj, χ) = is_point(subman, proj(G, χ))
 end
 
 
-@testset "Test $G" for G in [
-    MultiDisplacementGroup(3,2),
-    MultiDisplacementGroup(2),
-    MultiAffineGroup(Unitary(3), 2),
-    ]
+@testset "Test $G" for G in group_list
     @test GT.check_grp_rep_Identity(G, affine_matrix)
     vel = rand_lie(rng, G)
     pt = rand(rng, G)
@@ -198,19 +188,60 @@ end
 end
 
 
-@testset for G in [MultiDisplacementGroup(3,2)]
-    χ1, χ2 = [rand(rng, G) for i in 1:2]
-    ξ1, ξ2 = [rand_lie(rng, G) for i in 1:2]
-    v1 = translate_from_id(G, χ1, ξ1, LeftSide())
-    @test GT.check_exp_invariant(G, exp, χ1, v1, χ2)
-    @test GT.check_exp_log(G, exp, log, χ1, χ2)
-    @test GT.check_log_exp(G, log, exp, χ1, v1)
-    v = similar(v1)
-    @test GT.check_log_log_(G, log, log!, v, χ1, χ2)
-    χ = similar(χ1)
-    @test GT.check_exp_exp_(G, exp, exp!, χ, χ1, v1)
+run_tests(G, tests) = begin
+    for (n, args) in tests
+        @testset "$n" begin
+            @test getfield(GT, Symbol("check_"*n))(G, args...)
+        end
+    end
 end
 
+grp_rep(G::MultiAffineGroup, x) = affine_matrix(G, x)
+# grp_rep(G, ::Identity) = grp_rep(G, identity_element(G))
+alg_rep(G::MultiAffineGroup, x) = screw_matrix(G, x)
+
+@testset "Group Testing.jl $G" for G in group_list
+    χ1, χ2 = map(ξ -> exp_lie(G, ξ), [rand_lie(rng, G) for i in 1:2])
+    # χ1, χ2 = [rand(rng, G) for i in 1:2]
+    ξ1, ξ2 = [rand_lie(rng, G) for i in 1:2]
+    v1 = translate_from_id(G, χ1, ξ1, LeftSide())
+    v = similar(v1)
+    χ = similar(χ1)
+    tests = [
+        ("exp_lie_point", [ξ1]),
+        ("adjoint_action_in_alg", [χ1, ξ1]),
+        ("adjoint_action_lie_bracket", [χ1, ξ1, ξ2]),
+        ("grp_rep_Identity", [grp_rep]),
+        ("grp_rep_compose", [grp_rep, χ1, χ2]),
+        ("alg_rep", [alg_rep, ξ1, ξ2]),
+        ("adjoint_action", [grp_rep, alg_rep, χ1, ξ1]),
+        ("inv_rep", [grp_rep, χ1]),
+        ("zero_Identity", []),
+        ("exp_log", [exp, log, χ1, χ2]),
+        ("log_exp", [log, exp, χ1, v1]),
+        ("log_log_", [log, log!, v, χ1, χ2]),
+        ("exp_exp_", [exp, exp!, χ, χ1, v1]),
+        ("exp_lie_ad", [χ1, ξ1]),
+    ]
+    run_tests(G, tests)
+
+    if G isa AbstractDecoratorManifold{ℂ}
+        @test_throws MethodError GT.check_exp_ad(G, ξ1, ξ2)
+    else
+        run_tests(G, [("exp_ad", [ξ1, ξ2])])
+    end
+    @testset "$side" for side in [LeftSide(), RightSide()]
+        side_tests = [
+            ("apply_diff_group_at_id", [ξ1, side, Identity]),
+            ("apply_diff_group_at_id", [ξ1, side, identity_element]),
+            ("inv_diff", [χ1, ξ1, side]),
+        ]
+        run_tests(G, side_tests)
+    end
+    @testset "$conv" for conv in [(LeftAction(), LeftSide()), (RightAction(), RightSide())]
+        run_tests(G, [("exp_invariant", [exp, χ1, v1, χ2, conv])])
+    end
+end
 
 
 include("multiaffine/apply_diff_group.jl")

@@ -13,7 +13,7 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
 
 [compat]
-ManifoldGroupTesting = "0.2"
+ManifoldGroupTesting = "0.2.4"
 ManifoldGroupUtils = "0.2.1"
 Manifolds = "0.9.18, 0.10"
 ManifoldsBase = "0.15"
