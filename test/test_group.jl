@@ -203,6 +203,7 @@ grp_rep(G::MultiAffineGroup, x) = affine_matrix(G, x)
 alg_rep(G::MultiAffineGroup, x) = screw_matrix(G, x)
 
 @testset "Group Testing.jl $G" for G in group_list
+    Random.seed!(rng, 0)
     χ1, χ2 = map(ξ -> exp_lie(G, ξ), [rand_lie(rng, G) for i in 1:2])
     # χ1, χ2 = [rand(rng, G) for i in 1:2]
     ξ1, ξ2 = [rand_lie(rng, G) for i in 1:2]
